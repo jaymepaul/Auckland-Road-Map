@@ -107,4 +107,4 @@ public class SquaresExample extends GUI {
 	}
 }
 
-// code for COMP261 assignments - EDITED
+// code for COMP261 assignments - EDITED 
