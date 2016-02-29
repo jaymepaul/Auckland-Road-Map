@@ -1,9 +1,11 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -26,14 +28,19 @@ public class Main extends GUI {
 	@Override
 	protected void redraw(Graphics g) {
 		
+		Graphics2D g2 = (Graphics2D) g;
+		
 		for(Node n : nodes){
+			getDrawingAreaDimension();
 			g.setColor(Color.black);
 			g.fillRect((int)n.getLocation().x, (int)n.getLocation().y, 30, 30);
+			//g2.fill(new Rectangle2D.Double(n.getLocation().x, n.getLocation().y, 30, 30))
 		}
 		
 		for(RoadSegment seg: segments){
 			g.setColor(Color.blue);
 			g.drawLine((int)seg.getNode1().getLocation().x, (int)seg.getNode1().getLocation().y, (int)seg.getNode2().getLocation().x, (int)seg.getNode2().getLocation().y);		//Draw collection of Segments			
+			//g2.draw(new Line2D.Double(seg.getNode1().getLocation().x, seg.getNode2().getLocation().y, seg.getNode2().getLocation().x, seg.getNode2().getLocation().y));
 		}
 		
 	}
