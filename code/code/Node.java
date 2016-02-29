@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -16,20 +21,31 @@ public class Node {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		
+		this.segments = new ArrayList<RoadSegment>();
 		location = Location.newFromLatLon(latitude, longitude);			//Create new Location from lat, lon
 	}
+
 	
-	//Alternative Constructor for Road Segment
-	public Node(int nodeID, List<Location> coords, boolean nodeNo){
+	/**Read Nodes from data files 
+	 * @throws FileNotFoundException */
+	public static void loadNodes(File file, Main main) throws FileNotFoundException{
+					
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
 		
-		Location loc;
-		if(nodeNo)
-			loc = coords.get(0);					//First Pair of Co-ord
-		else
-			loc = coords.get(coords.size());		//Last Pair of Co-ord
-		
-		this.nodeID = nodeID;
-		this.location = loc;
+		try {
+			while((line = br.readLine()) != null){
+				
+				StringTokenizer st = new StringTokenizer(line, "\t");			//Tokenizer separated by Tab
+				int nodeID = Integer.parseInt(st.nextToken());
+				double lat = Double.parseDouble(st.nextToken());
+				double lon = Double.parseDouble(st.nextToken());
+				
+				main.getNodes().add(new Node(nodeID, lat, lon));				//Add New Node to Collection
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public List<RoadSegment> getSegments() {
