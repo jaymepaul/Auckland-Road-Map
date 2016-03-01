@@ -16,8 +16,8 @@ public class RoadSegment {
 		this.length = length;
 		this.coords = coords;
 
-		this.node1 = main.getNodes().get(node1);				//Initialize the Segment's Nodes based on KEY/ID
-		this.node2 = main.getNodes().get(node2);
+		this.node1 = main.getNodes().get(nodeID1);				//Initialize the Segment's Nodes based on KEY/ID
+		this.node2 = main.getNodes().get(nodeID2);
 	}
 
 	public static void loadSegments(File file, Main main) throws IOException {
