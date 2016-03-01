@@ -13,7 +13,7 @@ public class Node {
 	private double longitude;
 	
 	private Location location;
-	private List<RoadSegment> segments;				//List of segments attached to Node
+	private Map<Integer, RoadSegment> segments;				//List of segments attached to Node
 	
 	//Main Constructor for Node
 	public Node(int nodeID, double latitude, double longitude){
@@ -21,7 +21,7 @@ public class Node {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		
-		this.segments = new ArrayList<RoadSegment>();
+		this.segments = new HashMap<Integer, RoadSegment>();	
 		location = Location.newFromLatLon(latitude, longitude);			//Create new Location from lat, lon
 	}
 
@@ -41,23 +41,11 @@ public class Node {
 				double lat = Double.parseDouble(st.nextToken());
 				double lon = Double.parseDouble(st.nextToken());
 				
-				main.getNodes().add(new Node(nodeID, lat, lon));				//Add New Node to Collection
+				main.getNodes().put(nodeID, new Node(nodeID, lat, lon));		//Create new node & add to Collection of Nodes
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public List<RoadSegment> getSegments() {
-		return segments;
-	}
-
-	public void setSegments(List<RoadSegment> segments) {
-		this.segments = segments;
-	}
-
-	public void addSegment(int nodeID, RoadSegment segment){
-		segments.add(segment);
 	}
 
 	public int getNodeID() {
@@ -75,5 +63,10 @@ public class Node {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
+
+	public Map<Integer, RoadSegment> getSegments() {
+		return segments;
+	}
+	
 
 }

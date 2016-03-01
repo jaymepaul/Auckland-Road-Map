@@ -16,12 +16,8 @@ public class RoadSegment {
 		this.length = length;
 		this.coords = coords;
 
-		for(Node n: main.getNodes()){					//Get each intersection of segment from Collection of Nodes
-			if(n.getNodeID() == nodeID1)
-				this.node1 = n;
-			else if(n.getNodeID() == nodeID2)
-				this.node2 = n;
-		}
+		this.node1 = main.getNodes().get(node1);				//Initialize the Segment's Nodes based on KEY/ID
+		this.node2 = main.getNodes().get(node2);
 	}
 
 	public static void loadSegments(File file, Main main) throws IOException {
@@ -42,18 +38,18 @@ public class RoadSegment {
 			while(st.hasMoreTokens())
  				coords.add(new Location(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken())));		//Load coordinates
 			
-			RoadSegment segment = new RoadSegment(roadID, length, nodeID1, nodeID2, coords, main);		
-			main.getSegments().add(segment);									//Add to Collection of Segments
+			RoadSegment segment = new RoadSegment(roadID, length, nodeID1, nodeID2, coords, main);		//Create New Segment
 			
-			for (Node n : main.getNodes()) {
-				if (n.getNodeID() == nodeID1 || n.getNodeID() == nodeID2)
-					n.getSegments().add(segment);								//Add to Node's Collection of Segments
-			}
-
-			for (Road r : main.getRoads()) {
-				if (r.getRoadID() == roadID)
-					r.getSegments().add(segment); 								//Add to Road's Collection of Segments
-			}
+			main.getSegments().put(roadID, segment);									//Add to Collection of Segments
+			
+			if(main.getNodes().containsKey(nodeID1))								
+				main.getNodes().get(nodeID1).getSegments().put(roadID, segment);
+			else if(main.getNodes().containsKey(nodeID2))	
+				main.getNodes().get(nodeID2).getSegments().put(roadID, segment);		//Add to Node's Collection of Segments
+			
+			if(main.getRoads().containsKey(roadID))
+				main.getRoads().get(roadID).getSegments().put(roadID, segment);			//Add to Road's Collection of Segments
+			
 		}
 	}
 	
@@ -85,8 +81,5 @@ public class RoadSegment {
 		return coords;
 	}
 
-	public void setCoords(List<Location> coords) {
-		this.coords = coords;
-	}
 
 }

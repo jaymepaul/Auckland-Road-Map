@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
@@ -10,30 +11,33 @@ import java.io.IOException;
 import java.util.*;
 
 public class Main extends GUI {
-
-	private List<Road> roads;
-	private List<Node> nodes;
-	private List<RoadSegment> segments;
-	//private List<Polygon> polygons;
+	
+	private Map<Integer, Node> nodes;
+	private Map<Integer, Road> roads;
+	private Map<Integer, RoadSegment> segments;
+	
 
 	public Main() {
-		this.roads = new ArrayList<Road>();
-		this.nodes = new ArrayList<Node>();
-		this.segments = new ArrayList<RoadSegment>();
-		//this.polygons = new ArrayList<Polygon>();
+		this.nodes = new HashMap<Integer, Node>();
+		this.roads = new HashMap<Integer, Road>();
+		this.segments = new HashMap<Integer, RoadSegment>();
 	}
 
 	@Override
-	protected void redraw(Graphics g) {
+	protected void redraw(Graphics g) {			//JUST BEFORE REDRAW, DATA STRUCTS RESET, NOT GETTING PASSED THROUGH
 		
-		for(Node n : nodes){
-			g.setColor(Color.black);
-			g.fillRect((int)n.getLocation().x, (int)n.getLocation().y, 30, 30);
-		}
+		Graphics2D g2 = (Graphics2D) g;
 		
-		for(RoadSegment seg: segments){
-			g.setColor(Color.blue);
-			g.drawLine((int)seg.getNode1().getLocation().x, (int)seg.getNode1().getLocation().y, (int)seg.getNode2().getLocation().x, (int)seg.getNode2().getLocation().y);		//Draw collection of Segments			
+		double windowSize = this.getDrawingAreaDimension().getHeight() * this.getDrawingAreaDimension().getWidth();
+		double scale;
+		
+		
+		for(Map.Entry<Integer, Node> entry: nodes.entrySet()){			
+			g2.setColor(Color.BLUE);
+			g2.draw(new Line2D.Double(entry.getValue().getLocation().x,
+									entry.getValue().getLocation().y,
+									entry.getValue().getLocation().x,
+									entry.getValue().getLocation().y));
 		}
 		
 	}
@@ -73,29 +77,19 @@ public class Main extends GUI {
 		new Main();
 	}
 
-	public List<Road> getRoads() {
-		return roads;
-	}
-
-	public void setRoads(List<Road> roads) {
-		this.roads = roads;
-	}
-
-	public List<Node> getNodes() {
+	public Map<Integer, Node> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(List<Node> nodes) {
-		this.nodes = nodes;
+	public Map<Integer, Road> getRoads() {
+		return roads;
 	}
 
-	public List<RoadSegment> getSegments() {
+	public Map<Integer, RoadSegment> getSegments() {
 		return segments;
 	}
 
-	public void setSegments(List<RoadSegment> segments) {
-		this.segments = segments;
-	}
+	
 	
 	
 }

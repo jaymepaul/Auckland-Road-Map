@@ -18,7 +18,7 @@ public class Road {
 	private int notForPede;
 	private int notForBicycle;
 	
-	private List<RoadSegment> segments;					//List of Road Segments
+	private Map<Integer, RoadSegment> segments;					//List of Road Segments
 	
 	
 	public Road(int roadID, int type, String label, String city, int oneWay, int speed, int roadClass, int notForCar, int notForPede, int notForBicycle) {
@@ -33,7 +33,7 @@ public class Road {
 		this.notForPede = notForPede;
 		this.notForBicycle = notForBicycle;
 		
-		this.segments = new ArrayList<RoadSegment>();
+		this.segments = new HashMap<Integer, RoadSegment>();
 	}
 	
 	public static void loadRoads(File file, Main main) throws FileNotFoundException {
@@ -56,7 +56,7 @@ public class Road {
 				int notForPede = Integer.parseInt(st.nextToken());
 				int notForBicycle = Integer.parseInt(st.nextToken());
 				
-				main.getRoads().add(new Road(roadID, type, label, city, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle));				//Add New Road to Collection
+				main.getRoads().put(roadID , new Road(roadID, type, label, city, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle));				//Add New Road to Collection of Roads
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -73,15 +73,11 @@ public class Road {
 		this.roadID = roadID;
 	}
 
-
-	public List<RoadSegment> getSegments() {
+	public Map<Integer, RoadSegment> getSegments() {
 		return segments;
 	}
 
-
-	public void setSegments(List<RoadSegment> segments) {
-		this.segments = segments;
-	}
+	
 	
 	
 	
