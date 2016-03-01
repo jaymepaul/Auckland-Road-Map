@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
@@ -24,22 +25,40 @@ public class Main extends GUI {
 	}
 
 	@Override
-	protected void redraw(Graphics g) {			//JUST BEFORE REDRAW, DATA STRUCTS RESET, NOT GETTING PASSED THROUGH
+	protected void redraw(Graphics g) {		
 		
-		Graphics2D g2 = (Graphics2D) g;
-		
-		double windowSize = this.getDrawingAreaDimension().getHeight() * this.getDrawingAreaDimension().getWidth();
+		Location origin;		
+		Point point;
+		Location maxLoc;
+		Location minLoc;
 		double scale;
+		double windowSize = 850;					
 		
+		//========================DRAW NODES============================//
 		
-		for(Map.Entry<Integer, Node> entry: nodes.entrySet()){			
-			g2.setColor(Color.BLUE);
-			g2.draw(new Line2D.Double(entry.getValue().getLocation().x,
-									entry.getValue().getLocation().y,
-									entry.getValue().getLocation().x,
-									entry.getValue().getLocation().y));
+		for(Map.Entry<Integer, Node> entry: nodes.entrySet()){	
+			
+			origin = new Location(0,0);												//Calculate Origin Location
+			
+			maxLoc = entry.getValue().getMaxLoc(this);
+			minLoc = entry.getValue().getMinLoc(this);								//Get Max/Min Locations from data set
+			scale = (windowSize / (maxLoc.distance(minLoc)));						//Calculate Scale
+			
+			point = entry.getValue().getLocation().asPoint(origin, scale);			//Translate Location to Pixel Co-Ordinates
+			
+			g.setColor(Color.BLACK);
+			g.drawOval(point.y, point.x, 3, 3);
+			g.fillOval(point.y, point.x, 3, 3);										//Draw Node based on Pixel Co-Ordinates
 		}
 		
+		//========================DRAW EDGES=============================//
+		
+		for(Map.Entry<Integer, RoadSegment> entry: segments.entrySet()){	
+			
+			origin = new Location(0,0);												//Calculate Origin Location
+			
+			
+		}
 	}
 
 	@Override

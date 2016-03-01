@@ -67,6 +67,39 @@ public class Node {
 	public Map<Integer, RoadSegment> getSegments() {
 		return segments;
 	}
+
+	/**Returns maxLocation from Collection of Nodes*/
+	public Location getMaxLoc(Main main) {
+		
+		double x = -1000, y = -1000;
+		
+		for(Map.Entry<Integer, Node> e: main.getNodes().entrySet()){
+			if(e.getValue().getLocation().x > x)
+				x = e.getValue().getLocation().x;
+			if(e.getValue().getLocation().y > y)
+				y = e.getValue().getLocation().y;
+		}
+		
+		return new Location(x,y);
+	}
+
+	/**Returns minLocation from Collection of Nodes*/
+	public Location getMinLoc(Main main) {
+		
+		double x = 1000, y = 1000;
+		
+		for(Map.Entry<Integer, Node> e: main.getNodes().entrySet()){
+			if(e.getValue().getLocation().x < x)
+				x = e.getValue().getLocation().x;
+			if(e.getValue().getLocation().y < y)
+				y = e.getValue().getLocation().y;
+		}
+		
+		return new Location(x,y);
+	}
+
+	
+
 	
 
 }
