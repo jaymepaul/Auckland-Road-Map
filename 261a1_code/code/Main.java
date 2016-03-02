@@ -63,7 +63,21 @@ public class Main extends GUI {
 			p2 = entry.getValue().getNode2().getLocation().asPoint(origin, scale);
 			
 			g.setColor(Color.BLUE);
-			g.drawLine(p1.y, p1.x, p2.y, p2.x);
+			g.drawLine(p1.y, p1.x, p2.y, p2.x);											//Draw Edges from N1 to N2
+			
+			//===============CHECK==============//
+			
+			for(int i = 0; i < entry.getValue().getCoords().size()-1; i++){				//CHECK: Draw Edges for ALL Co-Ordinates on Segment??
+						
+				p1 = entry.getValue().getCoords().get(i).asPoint(origin, scale);
+				p2 = entry.getValue().getCoords().get(i + 1).asPoint(origin, scale);	//Get Pixel Co-Ordinates of current loc and next loc
+				
+				g.setColor(Color.BLUE);
+				g.drawLine(p1.y, p1.x, p2.y, p2.x);										//Draw Edges
+				
+			}
+			
+			//=============CHECK===============//
 			
 		}
 	}
