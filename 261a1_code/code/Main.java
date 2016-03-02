@@ -121,6 +121,7 @@ public class Main extends GUI {
 		}
 		
 		highlightRoad(selectSegments, graphics);										//Highlight Road on GUI
+		this.getTextOutputArea().setText(roadText);										//Display RoadName on TextBox
 
 	}
 
@@ -167,7 +168,7 @@ public class Main extends GUI {
 			
 			if(mouseLoc.distance(entry.getValue().getLocation()) < dist){
 				dist = mouseLoc.distance(entry.getValue().getLocation());
-				node = entry.getValue();										//Find Node - shortest distance from mouseClick to actual Node
+				node = entry.getValue();										//Find Node - based on shortest distance from mouseClick to actual Node
 			}	
 		}	
 		
