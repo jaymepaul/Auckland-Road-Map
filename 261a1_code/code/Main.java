@@ -105,7 +105,22 @@ public class Main extends GUI {
 	@Override
 	protected void onSearch() {
 
+		Road road = null;
+		String roadText = this.getSearchBox().getText();								//Get User Input
+		List<RoadSegment> selectSegments = new ArrayList<RoadSegment>();				//List of Segments based on given Road
 		
+		for(Map.Entry<Integer, Road> r: roads.entrySet()){
+	
+			if(r.getValue().getLabel().equals(roadText)){								//Get Road based on input
+				
+				for(Map.Entry<Integer, RoadSegment> seg: segments.entrySet()){			
+					if(seg.getValue().getRoadSegID() == r.getValue().getRoadID())
+						selectSegments.add(seg.getValue());								//Get all Segments associated with this Road
+				}
+			}			
+		}
+		
+		highlightRoad(selectSegments, graphics);										//Highlight Road on GUI
 
 	}
 
@@ -167,6 +182,20 @@ public class Main extends GUI {
 		g.setColor(Color.YELLOW);
 		g.drawOval(point.y, point.x, 3, 3);
 		g.fillOval(point.y, point.x, 3, 3);									//Highlight Node based on Pixel Co-Ordinates
+		
+	}
+	
+	/**Highlights Road based on List of Segments within that Road*/
+	private void highlightRoad(List<RoadSegment> segments, Graphics g){
+		
+		for(RoadSegment seg: segments){
+			
+			Point p1 = seg.getNode1().getLocation().asPoint(origin, scale);
+			Point p2 = seg.getNode2().getLocation().asPoint(origin, scale);			//Translate Location to Pixel-Coordinates
+			
+			g.setColor(Color.YELLOW);
+			g.drawLine(p1.y, p1.x, p2.y, p2.x);										//Draw Edges
+		}
 		
 	}
 
