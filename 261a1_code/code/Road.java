@@ -77,6 +77,10 @@ public class Road {
 		return segments;
 	}
 
+	public String getLabel() {
+		return label;
+	}
+
 	
 	
 	

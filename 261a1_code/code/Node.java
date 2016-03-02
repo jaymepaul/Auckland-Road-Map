@@ -97,7 +97,21 @@ public class Node {
 		
 		return new Location(x,y);
 	}
-
+	
+	/**Returns List of RoadNames of Roads connected to Intersection*/
+	public List<String> getRoadsAtIntersect(Main main){
+		
+		List<String> roadNames = new ArrayList<String>();
+		
+		for(Map.Entry<Integer, RoadSegment> entry: segments.entrySet()){
+			
+			String roadName = main.getRoads().get(entry.getValue().getRoadSegID()).getLabel();			//Get RoadName from Segment
+			roadNames.add(roadName);
+		}
+		
+		return roadNames;
+	}
+	
 	
 
 	

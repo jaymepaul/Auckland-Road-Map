@@ -383,6 +383,7 @@ public abstract class GUI {
 
 		drawing.addMouseWheelListener(new MouseAdapter() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				//	TO DO 
 			}
 		});
 
@@ -430,6 +431,24 @@ public abstract class GUI {
 		frame.pack();
 		frame.setVisible(true);
 	}
+
+	public JPanel getControls() {
+		return controls;
+	}
+
+	public void setControls(JPanel controls) {
+		this.controls = controls;
+	}
+
+	public JComponent getDrawing() {
+		return drawing;
+	}
+
+	public void setDrawing(JComponent drawing) {
+		this.drawing = drawing;
+	}
+	
+	
 }
 
 // code for COMP261 assignments
