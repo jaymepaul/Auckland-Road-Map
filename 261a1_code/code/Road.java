@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -36,7 +35,7 @@ public class Road {
 		this.segments = new HashMap<Integer, RoadSegment>();
 	}
 	
-	public static void loadRoads(File file, Main main) throws FileNotFoundException {
+	public static void loadRoads(File file, Main main) throws IOException {
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -61,6 +60,8 @@ public class Road {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		br.close();
 	}
 
 

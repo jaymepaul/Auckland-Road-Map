@@ -1,12 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -105,7 +100,6 @@ public class Main extends GUI {
 	@Override
 	protected void onSearch() {
 
-		Road road = null;
 		String roadText = this.getSearchBox().getText();								//Get User Input
 		List<RoadSegment> selectSegments = new ArrayList<RoadSegment>();				//List of Segments based on given Road
 		

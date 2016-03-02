@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -27,8 +26,8 @@ public class Node {
 
 	
 	/**Read Nodes from data files 
-	 * @throws FileNotFoundException */
-	public static void loadNodes(File file, Main main) throws FileNotFoundException{
+	 * @throws IOException */
+	public static void loadNodes(File file, Main main) throws IOException{
 					
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -46,6 +45,8 @@ public class Node {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		br.close();
 	}
 
 	public int getNodeID() {

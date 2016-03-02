@@ -51,6 +51,8 @@ public class RoadSegment {
 				main.getRoads().get(roadID).getSegments().put(roadID, segment);			//Add to Road's Collection of Segments
 			
 		}
+		
+		br.close();
 	}
 	
 	public Node getNode1() {
