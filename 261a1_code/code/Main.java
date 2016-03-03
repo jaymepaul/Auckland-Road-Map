@@ -10,8 +10,8 @@ import java.util.*;
 public class Main extends GUI {
 	
 	private Map<Integer, Node> nodes;
-	private Map<Integer, Road> roads;
-	private Map<Integer, RoadSegment> segments;					//Data Structures, All Maps, Easily Access Values via KEYS
+	private Map<Integer, Road> roads;					
+	private List<RoadSegment> segments;							//Data Structures, All Maps, Easily Access Values via KEYS
 	
 	private double scale;
 	private int offSetX;
@@ -22,7 +22,7 @@ public class Main extends GUI {
 		
 		this.nodes = new HashMap<Integer, Node>();
 		this.roads = new HashMap<Integer, Road>();
-		this.segments = new HashMap<Integer, RoadSegment>();		//Initialize Collections/DataStructures
+		this.segments = new ArrayList<RoadSegment>();			//Initialize Collections/DataStructures
 		
 		offSetX = 0;
 		offSetY = 0;
@@ -36,11 +36,8 @@ public class Main extends GUI {
 		for(Node n: nodes.values())
 			n.drawNodes(g, getDrawingAreaDimension(), origin, scale, offSetX, offSetY);
 		
-		for(Road road : roads.values()){
-			for(RoadSegment seg : road.getSegments().values()){
-				seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);
-			}
-		}
+		for(RoadSegment seg : segments)
+			seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);
 					
 	}
 
@@ -66,17 +63,17 @@ public class Main extends GUI {
 	@Override
 	protected void onSearch() {
 
-		String roadText = this.getSearchBox().getText();								//Get User Input
+		String roadText = this.getSearchBox().getText();						//Get User Input
+		List<Road> selectRoads = new ArrayList<Road>();							//List to contain all Roads of equal Name & City
 		
-		for(Road r: roads.values()){
-	
-			if(r.getLabel().equals(roadText)){											//Get Road based on input
-				
-				highlightRoad(r.getSegments());											//Highlight Road on GUI
-				getTextOutputArea().setText(roadText);									//Display RoadName on TextBox
-				
-			}			
+		for(Road r : roads.values()){
+			if(r.getLabel().equals(roadText))
+				selectRoads.add(r);												//Add Road to List of Roads with equal Name
 		}
+		
+		highlightRoad(selectRoads);												//Highlight Road on GUI
+		getTextOutputArea().setText(roadText);									//Display RoadName on TextBox
+		
 	}
 
 	@Override
@@ -110,8 +107,8 @@ public class Main extends GUI {
 		
 		try {
 			Node.loadNodes(nodesFile, nodes);					
-			Road.loadRoads(roadsFile, this);
-			RoadSegment.loadSegments(segmentsFile, this);					//Load Files
+			Road.loadRoads(roadsFile, roads);
+			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					//Load Files
 			//Polygon.loadPolygons(polygons);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -145,54 +142,18 @@ public class Main extends GUI {
 	
 	
 	/**Highlights Road based on Sequence of Segments within that Road*/
-	private void highlightRoad(Map<Integer, RoadSegment> selectSegments){
+	private void highlightRoad(List<Road> roads){
 		
-		for(RoadSegment seg: segments.values())
+		for(RoadSegment seg: segments)
 			seg.setColor(Color.BLUE); 						//Reset Color to all Segments
 		
-		for(RoadSegment seg: selectSegments.values())
-			seg.setColor(Color.GREEN);						//Highlight selected Road
+		for(Road r : roads){
+			for(RoadSegment seg : r.getSegments())
+				seg.setColor(Color.GREEN);					//Highlight selected Road
+		}		
 		
-	}
-	
-//	/**Set Scale Size*/
-//	public void setScale(double windowSize){
-//		
-//		Location maxLoc = getMaxLoc();
-//		Location minLoc = getMinLoc();								//Get Max/Min Locations from data set
-//		scale = (windowSize / (maxLoc.distance(minLoc)));			//Calculate Scale
-//	
-//	}
-	
-	/**Returns maxLocation from Collection of Nodes*/
-	public Location getMaxLoc() {
-		
-		double x = -1000, y = -1000;
-		
-		for(Node n: nodes.values()){
-			if(n.getLocation().x > x)
-				x = n.getLocation().x;
-			if(n.getLocation().y > y)
-				y = n.getLocation().y;
-		}
-		
-		return new Location(x,y);
 	}
 
-	/**Returns minLocation from Collection of Nodes*/
-	public Location getMinLoc() {
-		
-		double x = 1000, y = 1000;
-		
-		for(Node n: nodes.values()){
-			if(n.getLocation().x < x)
-				x = n.getLocation().x;
-			if(n.getLocation().y < y)
-				y = n.getLocation().y;
-		}
-		
-		return new Location(x,y);
-	}
 
 	public static void main(String[] args) throws IOException {
 		new Main();
@@ -206,7 +167,7 @@ public class Main extends GUI {
 		return roads;
 	}
 
-	public Map<Integer, RoadSegment> getSegments() {
+	public List<RoadSegment> getSegments() {
 		return segments;
 	}
 

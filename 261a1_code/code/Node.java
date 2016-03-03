@@ -16,20 +16,26 @@ public class Node {
 	private double longitude;
 	
 	private Location location;
-	private Map<Integer, RoadSegment> segments;				//List of segments attached to Node
+	private List<RoadSegment> segments;											//List of Segments attached to Node
 	
 	private Color color;
 	private final int NODE_SIZE = 3;
 	
-	//Main Constructor for Node
+	
+	/**Node constructor, takes in a nodeID, latitude & longitude. 
+	 * Automatically converts lat, lon to a Location value.
+	 * Initializes List of Segments to obtain segments connected to this Node.  
+	 * 
+	 * @param int nodeID, double latitude, double longitude
+	 * @return new Node Object based on given parameters*/
 	public Node(int nodeID, double latitude, double longitude){
 		this.nodeID = nodeID;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		
 		this.color = Color.BLACK;
-		this.segments = new HashMap<Integer, RoadSegment>();	
-		this.location = Location.newFromLatLon(latitude, longitude);			//Create new Location from lat, lon
+		this.segments = new ArrayList<RoadSegment>();	
+		this.location = Location.newFromLatLon(latitude, longitude);			
 	}
 
 	
@@ -74,7 +80,7 @@ public class Node {
 		
 		List<String> roadNames = new ArrayList<String>();
 		
-		for(RoadSegment seg: segments.values()){
+		for(RoadSegment seg: segments){
 			
 			String roadName = main.getRoads().get(seg.getRoadSegID()).getLabel();			//Get RoadName from Segment
 			roadNames.add(roadName);
@@ -99,7 +105,7 @@ public class Node {
 		this.location = location;
 	}
 
-	public Map<Integer, RoadSegment> getSegments() {
+	public List<RoadSegment> getSegments() {
 		return segments;
 	}
 

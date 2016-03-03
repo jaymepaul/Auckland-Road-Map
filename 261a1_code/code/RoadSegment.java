@@ -8,27 +8,27 @@ import java.util.*;
 
 public class RoadSegment {
 
-	private int roadSegID;
+	private int roadID;
 	private double length;
 	private Node node1;
 	private Node node2;
-	private List<Location> coords; // List of co-ordinates along segment
+	private List<Location> coords; 				// List of Co-ordinates along segment
 	
 	private Color color;
 
-	public RoadSegment(int roadSegID, double length, int nodeID1, int nodeID2, List<Location> coords, Main main) {
+	public RoadSegment(int roadID, double length, int nodeID1, int nodeID2, List<Location> coords, Map<Integer, Node> nodes) {
 
-		this.roadSegID = roadSegID;
+		this.roadID = roadID;
 		this.length = length;
 		this.coords = coords;
 
-		this.node1 = main.getNodes().get(nodeID1);				//Initialize the Segment's Nodes based on KEY/ID
-		this.node2 = main.getNodes().get(nodeID2);
+		this.node1 = nodes.get(nodeID1);				//Initialize the Segment's Nodes based on KEY/ID
+		this.node2 = nodes.get(nodeID2);
 	
 		this.color = Color.BLUE;
 	}
 
-	public static void loadSegments(File file, Main main) throws IOException {
+	public static void loadSegments(File file, List<RoadSegment> segments, Map<Integer, Node> nodes, Map<Integer, Road> roads) throws IOException {
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -46,17 +46,14 @@ public class RoadSegment {
 			while(st.hasMoreTokens())
  				coords.add(new Location(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken())));		//Load coordinates
 			
-			RoadSegment segment = new RoadSegment(roadID, length, nodeID1, nodeID2, coords, main);		//Create New Segment
+			RoadSegment segment = new RoadSegment(roadID, length, nodeID1, nodeID2, coords, nodes);						//Create New Segment
 			
-			main.getSegments().put(roadID, segment);									//Add to Collection of Segments
+			segments.add(segment);									//Add to Collection of Segments
 			
-			if(main.getNodes().containsKey(nodeID1))								
-				main.getNodes().get(nodeID1).getSegments().put(roadID, segment);
-			else if(main.getNodes().containsKey(nodeID2))	
-				main.getNodes().get(nodeID2).getSegments().put(roadID, segment);		//Add to Node's Collection of Segments
+			segment.getNode1().getSegments().add(segment);			//Add to Node's Collection of Segments
+			segment.getNode2().getSegments().add(segment);
 			
-			if(main.getRoads().containsKey(roadID))
-				main.getRoads().get(roadID).getSegments().put(roadID, segment);			//Add to Road's Collection of Segments
+			roads.get(roadID).getSegments().add(segment);			//Add to Road's Collection of Segments
 			
 		}
 		
@@ -103,11 +100,11 @@ public class RoadSegment {
 	}
 
 	public int getRoadSegID() {
-		return roadSegID;
+		return roadID;
 	}
 
 	public void setRoadSegID(int roadSegID) {
-		this.roadSegID = roadSegID;
+		this.roadID = roadSegID;
 	}
 
 	public List<Location> getCoords() {

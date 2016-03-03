@@ -9,7 +9,7 @@ public class Road {
 	private String label, city;
 	private int roadID, type, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle;
 	
-	private Map<Integer, RoadSegment> segments;					//List of Road Segments
+	private List<RoadSegment> segments;					//List of Road Segments
 	
 	
 	public Road(int roadID, int type, String label, String city, int oneWay, int speed, int roadClass, int notForCar, int notForPede, int notForBicycle) {
@@ -24,10 +24,10 @@ public class Road {
 		this.notForPede = notForPede;
 		this.notForBicycle = notForBicycle;
 		
-		this.segments = new HashMap<Integer, RoadSegment>();
+		this.segments = new ArrayList<RoadSegment>();
 	}
 	
-	public static void loadRoads(File file, Main main) throws IOException {
+	public static void loadRoads(File file, Map<Integer, Road> roads) throws IOException {
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -47,7 +47,7 @@ public class Road {
 				int notForPede = Integer.parseInt(st.nextToken());
 				int notForBicycle = Integer.parseInt(st.nextToken());
 				
-				main.getRoads().put(roadID , new Road(roadID, type, label, city, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle));				//Add New Road to Collection of Roads
+				roads.put(roadID , new Road(roadID, type, label, city, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle));				//Add New Road to Collection of Roads
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,10 +66,14 @@ public class Road {
 		this.roadID = roadID;
 	}
 
-	public Map<Integer, RoadSegment> getSegments() {
+	public List<RoadSegment> getSegments() {
 		return segments;
 	}
 
+	public String getCity(){
+		return city;
+	}
+	
 	public String getLabel() {
 		return label;
 	}
