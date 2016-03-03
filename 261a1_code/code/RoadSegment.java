@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.*;
 import java.util.*;
 
@@ -9,6 +10,8 @@ public class RoadSegment {
 	private Node node1;
 	private Node node2;
 	private List<Location> coords; // List of co-ordinates along segment
+	
+	private Color color;
 
 	public RoadSegment(int roadSegID, double length, int nodeID1, int nodeID2, List<Location> coords, Main main) {
 
@@ -18,6 +21,8 @@ public class RoadSegment {
 
 		this.node1 = main.getNodes().get(nodeID1);				//Initialize the Segment's Nodes based on KEY/ID
 		this.node2 = main.getNodes().get(nodeID2);
+	
+		this.color = Color.BLUE;
 	}
 
 	public static void loadSegments(File file, Main main) throws IOException {
@@ -83,5 +88,14 @@ public class RoadSegment {
 		return coords;
 	}
 
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
+	
 
 }

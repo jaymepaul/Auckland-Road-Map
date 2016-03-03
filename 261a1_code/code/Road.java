@@ -6,16 +6,8 @@ import java.util.*;
 
 public class Road {
 
-	private int roadID;
-	private int type;
-	private String label;
-	private String city;
-	private int oneWay;
-	private int speed;
-	private int roadClass;
-	private int notForCar;
-	private int notForPede;
-	private int notForBicycle;
+	private String label, city;
+	private int roadID, type, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle;
 	
 	private Map<Integer, RoadSegment> segments;					//List of Road Segments
 	

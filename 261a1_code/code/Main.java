@@ -13,17 +13,18 @@ public class Main extends GUI {
 	private Map<Integer, RoadSegment> segments;					//Data Structures, All Maps, Easily Access Values via KEYS
 	
 	private double scale;
-	private Location origin;
-	private Location maxLoc;
-	private Location minLoc;									//Scaling and Origin Location Variables, Panning x Zooming
+	private Location origin;									//Panning x Zooming Variables
 	
 	private Graphics graphics;									//Graphics handler
 	
 	
 	public Main() {
+		
 		this.nodes = new HashMap<Integer, Node>();
 		this.roads = new HashMap<Integer, Road>();
-		this.segments = new HashMap<Integer, RoadSegment>();
+		this.segments = new HashMap<Integer, RoadSegment>();		//Initialize Collections/DataStructures
+		
+		origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
 	}
 
 	@Override
@@ -31,51 +32,31 @@ public class Main extends GUI {
 				
 		graphics = g;
 		Point point, p1, p2;
-		double windowSize = 850;					
 		
 		//========================DRAW NODES============================//
 		
-		for(Map.Entry<Integer, Node> entry: nodes.entrySet()){	
+		for(Node n: nodes.values()){	
 			
-			origin = new Location(0,0);												//CHECK: Calculate Origin Location
+			setScale(800);															//Set scale based on WindowSize
 			
-			maxLoc = entry.getValue().getMaxLoc(this);
-			minLoc = entry.getValue().getMinLoc(this);								//Get Max/Min Locations from data set
-			scale = (windowSize / (maxLoc.distance(minLoc)));						//Calculate Scale
+			point = n.getLocation().asPoint(origin, scale);							//Translate Location to Pixel Co-Ordinates
 			
-			point = entry.getValue().getLocation().asPoint(origin, scale);			//Translate Location to Pixel Co-Ordinates
-			
-			g.setColor(Color.BLACK);
-			g.drawOval(point.y, point.x, 3, 3);
-			g.fillOval(point.y, point.x, 3, 3);										//Draw Node based on Pixel Co-Ordinates		
-			
-		}
+			g.setColor(n.getColor());
+			g.drawOval(point.x, point.y, 3, 3);
+			g.fillOval(point.x, point.y, 3, 3);										//Draw Node based on Pixel Co-Ordinates		
 		
 		//========================DRAW EDGES=============================//
-		
-		for(Map.Entry<Integer, RoadSegment> entry: segments.entrySet()){
 			
-			p1 = entry.getValue().getNode1().getLocation().asPoint(origin, scale);
-			p2 = entry.getValue().getNode2().getLocation().asPoint(origin, scale);
-			
-			g.setColor(Color.BLUE);
-			g.drawLine(p1.y, p1.x, p2.y, p2.x);											//Draw Edges from N1 to N2
-			
-			//===============CHECK==============//
-			
-			for(int i = 0; i < entry.getValue().getCoords().size()-1; i++){				//CHECK: Draw Edges for ALL Co-Ordinates on Segment??
-						
-				p1 = entry.getValue().getCoords().get(i).asPoint(origin, scale);
-				p2 = entry.getValue().getCoords().get(i + 1).asPoint(origin, scale);	//Get Pixel Co-Ordinates of current loc and next loc
+			for(RoadSegment seg : n.getSegments().values()){
 				
-				g.setColor(Color.BLUE);
-				g.drawLine(p1.y, p1.x, p2.y, p2.x);										//Draw Edges
+				p1 = seg.getNode1().getLocation().asPoint(origin, scale);
+				p2 = seg.getNode2().getLocation().asPoint(origin, scale);			//Translate Location of N1,N2 to Pixel-Coords
 				
+				g.setColor(seg.getColor());
+				g.drawLine(p1.x, p1.y, p2.x, p2.y);									//Draw Edges
 			}
-			
-			//=============CHECK===============//
-			
 		}
+		
 	}
 
 	@Override
@@ -86,37 +67,31 @@ public class Main extends GUI {
 		Point point = new Point(e.getX(), e.getY());
 		Location loc = Location.newFromPoint(point, origin, scale);						//Translate MousePos into Location
 		
-		Node node = this.getClosestNode(loc);											//Get Node closest to MousePos				
+		Node node = getClosestNode(loc);												//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
 		for(String s : node.getRoadsAtIntersect(this))
 			info.append("Road: " + s + "\n");											//Get RoadNames of Roads connected to Intersection
 		
-		highlightIntersection(node, graphics);											//Highlight Node on GUI
-		this.getTextOutputArea().setText(info.toString());								//Display Info on GUI
+		node.setColor(Color.RED);														//Highlight Node on GUI
+		getTextOutputArea().setText(info.toString());									//Display Info on GUI
 	}
 
 	@Override
 	protected void onSearch() {
 
 		String roadText = this.getSearchBox().getText();								//Get User Input
-		List<RoadSegment> selectSegments = new ArrayList<RoadSegment>();				//List of Segments based on given Road
 		
-		for(Map.Entry<Integer, Road> r: roads.entrySet()){
+		for(Road r: roads.values()){
 	
-			if(r.getValue().getLabel().equals(roadText)){								//Get Road based on input
+			if(r.getLabel().equals(roadText)){											//Get Road based on input
 				
-				for(Map.Entry<Integer, RoadSegment> seg: segments.entrySet()){			
-					if(seg.getValue().getRoadSegID() == r.getValue().getRoadID())
-						selectSegments.add(seg.getValue());								//Get all Segments associated with this Road
-				}
+				highlightRoad(r.getSegments());											//Highlight Road on GUI
+				getTextOutputArea().setText(roadText);									//Display RoadName on TextBox
+				
 			}			
 		}
-		
-		highlightRoad(selectSegments, graphics);										//Highlight Road on GUI
-		this.getTextOutputArea().setText(roadText);										//Display RoadName on TextBox
-
 	}
 
 	@Override
@@ -140,12 +115,12 @@ public class Main extends GUI {
 	}
 
 	@Override
-	protected void onLoad(File nodes, File roads, File segments, File polygons) {
+	protected void onLoad(File nodesFile, File roadsFile, File segmentsFile, File polygonsFile) {
 		
 		try {
-			Node.loadNodes(nodes, this);					
-			Road.loadRoads(roads, this);
-			RoadSegment.loadSegments(segments, this);					//Load Files
+			Node.loadNodes(nodesFile, nodes);					
+			Road.loadRoads(roadsFile, this);
+			RoadSegment.loadSegments(segmentsFile, this);					//Load Files
 			//Polygon.loadPolygons(polygons);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -156,42 +131,76 @@ public class Main extends GUI {
 	public Node getClosestNode(Location mouseLoc){
 		
 		Node node = null;
-		double dist = 10000;
+		double dist = 1000;
 		
-		for(Map.Entry<Integer, Node> entry : this.nodes.entrySet()){
+		for(Node n: nodes.values()) 
+			n.setColor(Color.BLACK);								//Reset Intersection Color
+		
+		for(Node n: nodes.values()){
 			
-			if(mouseLoc.distance(entry.getValue().getLocation()) < dist){
-				dist = mouseLoc.distance(entry.getValue().getLocation());
-				node = entry.getValue();										//Find Node - based on shortest distance from mouseClick to actual Node
-			}	
+//			dist = n.getLocation().distance(mouseLoc);				//Calculate distance between actual Node and MouseLoc
+//			
+//			if(n.getLocation().isClose(mouseLoc, dist))				//If distance is close then this becomes the closest Node
+//				node = n;
+			
+			if(n.getLocation().distance(mouseLoc) <= dist){
+				dist = n.getLocation().distance(mouseLoc);
+				node = n;
+			}
 		}	
 		
 		return node;
 	}
 	
-	/**Highlight the given Node on GUI*/
-	private void highlightIntersection(Node node, Graphics g) {
+	
+	/**Highlights Road based on Sequence of Segments within that Road*/
+	private void highlightRoad(Map<Integer, RoadSegment> selectSegments){
 		
-		Point point = node.getLocation().asPoint(origin, scale);			//Translate Location to Pixel Co-Ordinates
+		for(RoadSegment seg: segments.values())
+			seg.setColor(Color.BLUE); 						//Reset Color to all Segments
 		
-		g.setColor(Color.YELLOW);
-		g.drawOval(point.y, point.x, 3, 3);
-		g.fillOval(point.y, point.x, 3, 3);									//Highlight Node based on Pixel Co-Ordinates
+		for(RoadSegment seg: selectSegments.values())
+			seg.setColor(Color.GREEN);						//Highlight selected Road
 		
 	}
 	
-	/**Highlights Road based on List of Segments within that Road*/
-	private void highlightRoad(List<RoadSegment> segments, Graphics g){
+	/**Set Scale Size*/
+	public void setScale(double windowSize){
 		
-		for(RoadSegment seg: segments){
-			
-			Point p1 = seg.getNode1().getLocation().asPoint(origin, scale);
-			Point p2 = seg.getNode2().getLocation().asPoint(origin, scale);			//Translate Location to Pixel-Coordinates
-			
-			g.setColor(Color.YELLOW);
-			g.drawLine(p1.y, p1.x, p2.y, p2.x);										//Draw Edges
+		Location maxLoc = getMaxLoc();
+		Location minLoc = getMinLoc();								//Get Max/Min Locations from data set
+		scale = (windowSize / (maxLoc.distance(minLoc)));			//Calculate Scale
+	
+	}
+	
+	/**Returns maxLocation from Collection of Nodes*/
+	public Location getMaxLoc() {
+		
+		double x = -1000, y = -1000;
+		
+		for(Node n: nodes.values()){
+			if(n.getLocation().x > x)
+				x = n.getLocation().x;
+			if(n.getLocation().y > y)
+				y = n.getLocation().y;
 		}
 		
+		return new Location(x,y);
+	}
+
+	/**Returns minLocation from Collection of Nodes*/
+	public Location getMinLoc() {
+		
+		double x = 1000, y = 1000;
+		
+		for(Node n: nodes.values()){
+			if(n.getLocation().x < x)
+				x = n.getLocation().x;
+			if(n.getLocation().y < y)
+				y = n.getLocation().y;
+		}
+		
+		return new Location(x,y);
 	}
 
 	public static void main(String[] args) throws IOException {

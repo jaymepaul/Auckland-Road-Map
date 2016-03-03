@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,20 +15,23 @@ public class Node {
 	private Location location;
 	private Map<Integer, RoadSegment> segments;				//List of segments attached to Node
 	
+	private Color color;									//Default Node Color
+	
 	//Main Constructor for Node
 	public Node(int nodeID, double latitude, double longitude){
 		this.nodeID = nodeID;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		
+		this.color = Color.BLACK;
 		this.segments = new HashMap<Integer, RoadSegment>();	
-		location = Location.newFromLatLon(latitude, longitude);			//Create new Location from lat, lon
+		this.location = Location.newFromLatLon(latitude, longitude);			//Create new Location from lat, lon
 	}
 
 	
 	/**Read Nodes from data files 
 	 * @throws IOException */
-	public static void loadNodes(File file, Main main) throws IOException{
+	public static void loadNodes(File file, Map<Integer, Node> nodes) throws IOException{
 					
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String line;
@@ -40,13 +44,27 @@ public class Node {
 				double lat = Double.parseDouble(st.nextToken());
 				double lon = Double.parseDouble(st.nextToken());
 				
-				main.getNodes().put(nodeID, new Node(nodeID, lat, lon));		//Create new node & add to Collection of Nodes
+				nodes.put(nodeID, new Node(nodeID, lat, lon));		//Create new node & add to Collection of Nodes
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		br.close();
+	}
+	
+	/**Returns List of RoadNames of Roads connected to Intersection*/
+	public List<String> getRoadsAtIntersect(Main main){
+		
+		List<String> roadNames = new ArrayList<String>();
+		
+		for(RoadSegment seg: segments.values()){
+			
+			String roadName = main.getRoads().get(seg.getRoadSegID()).getLabel();			//Get RoadName from Segment
+			roadNames.add(roadName);
+		}
+		
+		return roadNames;
 	}
 
 	public int getNodeID() {
@@ -69,48 +87,13 @@ public class Node {
 		return segments;
 	}
 
-	/**Returns maxLocation from Collection of Nodes*/
-	public Location getMaxLoc(Main main) {
-		
-		double x = -1000, y = -1000;
-		
-		for(Map.Entry<Integer, Node> e: main.getNodes().entrySet()){
-			if(e.getValue().getLocation().x > x)
-				x = e.getValue().getLocation().x;
-			if(e.getValue().getLocation().y > y)
-				y = e.getValue().getLocation().y;
-		}
-		
-		return new Location(x,y);
+	public Color getColor() {
+		return color;
 	}
 
-	/**Returns minLocation from Collection of Nodes*/
-	public Location getMinLoc(Main main) {
-		
-		double x = 1000, y = 1000;
-		
-		for(Map.Entry<Integer, Node> e: main.getNodes().entrySet()){
-			if(e.getValue().getLocation().x < x)
-				x = e.getValue().getLocation().x;
-			if(e.getValue().getLocation().y < y)
-				y = e.getValue().getLocation().y;
-		}
-		
-		return new Location(x,y);
-	}
-	
-	/**Returns List of RoadNames of Roads connected to Intersection*/
-	public List<String> getRoadsAtIntersect(Main main){
-		
-		List<String> roadNames = new ArrayList<String>();
-		
-		for(Map.Entry<Integer, RoadSegment> entry: segments.entrySet()){
-			
-			String roadName = main.getRoads().get(entry.getValue().getRoadSegID()).getLabel();			//Get RoadName from Segment
-			roadNames.add(roadName);
-		}
-		
-		return roadNames;
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 	
 	
