@@ -1,4 +1,7 @@
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,7 +18,8 @@ public class Node {
 	private Location location;
 	private Map<Integer, RoadSegment> segments;				//List of segments attached to Node
 	
-	private Color color;									//Default Node Color
+	private Color color;
+	private final int NODE_SIZE = 3;
 	
 	//Main Constructor for Node
 	public Node(int nodeID, double latitude, double longitude){
@@ -51,6 +55,18 @@ public class Node {
 		}
 		
 		br.close();
+	}
+	
+	/**Draws Nodes based on location, shift, scale and origin*/
+	public void drawNodes(Graphics g, Dimension d, Location origin, double scale, int offSetX, int offSetY){
+		
+		g.setColor(color);
+		Point p = location.asPoint(origin, scale);
+		int x = (int) ((p.getX() + offSetX) + (d.width * 0.5));
+		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));
+		
+		g.fillOval( ((x-NODE_SIZE) / 2), ((y-NODE_SIZE / 2)), NODE_SIZE, NODE_SIZE);
+						
 	}
 	
 	/**Returns List of RoadNames of Roads connected to Intersection*/

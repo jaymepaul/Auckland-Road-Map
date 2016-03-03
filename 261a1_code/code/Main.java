@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -13,10 +14,9 @@ public class Main extends GUI {
 	private Map<Integer, RoadSegment> segments;					//Data Structures, All Maps, Easily Access Values via KEYS
 	
 	private double scale;
+	private int offSetX;
+	private int offSetY;
 	private Location origin;									//Panning x Zooming Variables
-	
-	private Graphics graphics;									//Graphics handler
-	
 	
 	public Main() {
 		
@@ -24,39 +24,24 @@ public class Main extends GUI {
 		this.roads = new HashMap<Integer, Road>();
 		this.segments = new HashMap<Integer, RoadSegment>();		//Initialize Collections/DataStructures
 		
+		offSetX = 0;
+		offSetY = 0;
+		scale = 100;												//Initialize Scale & Shift Variables
 		origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
 	}
 
 	@Override
 	protected void redraw(Graphics g) {		
 				
-		graphics = g;
-		Point point, p1, p2;
+		for(Node n: nodes.values())
+			n.drawNodes(g, getDrawingAreaDimension(), origin, scale, offSetX, offSetY);
 		
-		//========================DRAW NODES============================//
-		
-		for(Node n: nodes.values()){	
-			
-			setScale(800);															//Set scale based on WindowSize
-			
-			point = n.getLocation().asPoint(origin, scale);							//Translate Location to Pixel Co-Ordinates
-			
-			g.setColor(n.getColor());
-			g.drawOval(point.x, point.y, 3, 3);
-			g.fillOval(point.x, point.y, 3, 3);										//Draw Node based on Pixel Co-Ordinates		
-		
-		//========================DRAW EDGES=============================//
-			
-			for(RoadSegment seg : n.getSegments().values()){
-				
-				p1 = seg.getNode1().getLocation().asPoint(origin, scale);
-				p2 = seg.getNode2().getLocation().asPoint(origin, scale);			//Translate Location of N1,N2 to Pixel-Coords
-				
-				g.setColor(seg.getColor());
-				g.drawLine(p1.x, p1.y, p2.x, p2.y);									//Draw Edges
+		for(Road road : roads.values()){
+			for(RoadSegment seg : road.getSegments().values()){
+				seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);
 			}
 		}
-		
+					
 	}
 
 	@Override
@@ -99,16 +84,22 @@ public class Main extends GUI {
 		
 		switch (m){
 			case NORTH:
+				offSetY -= 10;
 				break;
 			case SOUTH:
+				offSetY += 10;
 				break;
 			case WEST:
+				offSetX -= 10;
 				break;
 			case EAST:
+				offSetX += 10;
 				break;
 			case ZOOM_IN:
+				scale += 10;
 				break;
 			case ZOOM_OUT:
+				scale -= 10;
 				break;
 		}	
 			
@@ -164,14 +155,14 @@ public class Main extends GUI {
 		
 	}
 	
-	/**Set Scale Size*/
-	public void setScale(double windowSize){
-		
-		Location maxLoc = getMaxLoc();
-		Location minLoc = getMinLoc();								//Get Max/Min Locations from data set
-		scale = (windowSize / (maxLoc.distance(minLoc)));			//Calculate Scale
-	
-	}
+//	/**Set Scale Size*/
+//	public void setScale(double windowSize){
+//		
+//		Location maxLoc = getMaxLoc();
+//		Location minLoc = getMinLoc();								//Get Max/Min Locations from data set
+//		scale = (windowSize / (maxLoc.distance(minLoc)));			//Calculate Scale
+//	
+//	}
 	
 	/**Returns maxLocation from Collection of Nodes*/
 	public Location getMaxLoc() {

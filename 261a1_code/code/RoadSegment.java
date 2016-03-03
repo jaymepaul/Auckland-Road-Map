@@ -1,4 +1,7 @@
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.io.*;
 import java.util.*;
 
@@ -58,6 +61,29 @@ public class RoadSegment {
 		}
 		
 		br.close();
+	}
+	
+	/**Draws Segments based on location, shift, scale and origin*/
+	public void drawSegments(Graphics g, Dimension d, double scale, Location origin, int offSetX, int offSetY){
+		
+		g.setColor(color);
+		
+		Point p1 = coords.get(0).asPoint(origin, scale);
+		Point p2;
+		
+		for(int i = 1; i < coords.size(); i++){
+			
+			p2 = coords.get(i).asPoint(origin, scale);
+			
+			int x1 = (int) ( (p1.getX() + offSetX) + (d.width * 0.5));
+			int y1 = (int) ( (p1.getY() + offSetY)  + (d.height * 0.5));
+			int x2 = (int) ( (p2.getX() + offSetX) + (d.width * 0.5));
+			int y2 = (int) ( (p2.getY() + offSetY) + (d.height * 0.5));
+			
+			g.drawLine(x1, y1, x2, y2);
+			p1 = p2;
+			
+		}
 	}
 	
 	public Node getNode1() {
