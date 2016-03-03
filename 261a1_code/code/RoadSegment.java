@@ -41,10 +41,10 @@ public class RoadSegment {
 			double length = Double.parseDouble(st.nextToken());
 			int nodeID1 = Integer.parseInt(st.nextToken());
 			int nodeID2 = Integer.parseInt(st.nextToken());
- 			List<Location> coords = new ArrayList<Location>();
 			
+ 			List<Location> coords = new ArrayList<Location>();
 			while(st.hasMoreTokens())
- 				coords.add(new Location(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken())));		//Load coordinates
+ 				coords.add(Location.newFromLatLon(Double.parseDouble(st.nextToken()), Double.parseDouble(st.nextToken())));		//Load coordinates
 			
 			RoadSegment segment = new RoadSegment(roadID, length, nodeID1, nodeID2, coords, nodes);						//Create New Segment
 			
@@ -65,22 +65,22 @@ public class RoadSegment {
 		
 		g.setColor(color);
 		
-		Point p1 = coords.get(0).asPoint(origin, scale);
+		Point p1 = this.coords.get(0).asPoint(origin, scale);
 		Point p2;
 		
 		for(int i = 1; i < coords.size(); i++){
 			
-			p2 = coords.get(i).asPoint(origin, scale);
+			p2 = this.coords.get(i).asPoint(origin, scale);
 			
 			int x1 = (int) ( (p1.getX() + offSetX) + (d.width * 0.5));
 			int y1 = (int) ( (p1.getY() + offSetY)  + (d.height * 0.5));
 			int x2 = (int) ( (p2.getX() + offSetX) + (d.width * 0.5));
-			int y2 = (int) ( (p2.getY() + offSetY) + (d.height * 0.5));
+			int y2 = (int) ( (p2.getY() + offSetY) + (d.height * 0.5));				//Translate Co-Ordinates based on Panning x Zooming
 			
 			g.drawLine(x1, y1, x2, y2);
 			p1 = p2;
 			
-		}
+		}	
 	}
 	
 	public Node getNode1() {

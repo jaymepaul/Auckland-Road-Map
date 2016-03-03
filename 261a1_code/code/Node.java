@@ -69,9 +69,9 @@ public class Node {
 		g.setColor(color);
 		Point p = location.asPoint(origin, scale);
 		int x = (int) ((p.getX() + offSetX) + (d.width * 0.5));
-		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));
+		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));			//Translate Co-Ordinates based on Panning x Zooming
 		
-		g.fillOval( ((x-NODE_SIZE) / 2), ((y-NODE_SIZE / 2)), NODE_SIZE, NODE_SIZE);
+		g.fillOval(x - 1, y - 1, 3 , 3);
 						
 	}
 	

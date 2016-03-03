@@ -34,11 +34,11 @@ public class Main extends GUI {
 	protected void redraw(Graphics g) {		
 				
 		for(Node n: nodes.values())
-			n.drawNodes(g, getDrawingAreaDimension(), origin, scale, offSetX, offSetY);
+			n.drawNodes(g, getDrawingAreaDimension(), origin, scale, offSetX, offSetY);				//Draw Nodes
 		
 		for(RoadSegment seg : segments)
-			seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);
-					
+			seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);		//Draw Segments
+		
 	}
 
 	@Override
