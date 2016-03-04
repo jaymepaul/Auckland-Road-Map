@@ -16,6 +16,7 @@ public class Main extends GUI {
 	private double scale;
 	private int offSetX;
 	private int offSetY;
+	private Dimension dimension;
 	private Location origin;									//Panning x Zooming Variables
 	
 	public Main() {
@@ -24,20 +25,21 @@ public class Main extends GUI {
 		this.roads = new HashMap<Integer, Road>();
 		this.segments = new ArrayList<RoadSegment>();			//Initialize Collections/DataStructures
 		
-		offSetX = 0;
-		offSetY = 0;
-		scale = 100;												//Initialize Scale & Shift Variables
-		origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
+		this.offSetX = 0;
+		this.offSetY = 0;
+		this.scale = 100;	
+		this.dimension = getDrawingAreaDimension();						//Initialize Scale & Shift Variables
+		this.origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
 	}
 
 	@Override
 	protected void redraw(Graphics g) {		
 				
 		for(Node n: nodes.values())
-			n.drawNodes(g, getDrawingAreaDimension(), origin, scale, offSetX, offSetY);				//Draw Nodes
+			n.drawNodes(g, dimension, origin, scale, offSetX, offSetY);				//Draw Nodes
 		
 		for(RoadSegment seg : segments)
-			seg.drawSegments(g, getDrawingAreaDimension(), scale, origin, offSetX, offSetY);		//Draw Segments
+			seg.drawSegments(g, dimension, scale, origin, offSetX, offSetY);		//Draw Segments
 		
 	}
 
@@ -47,9 +49,9 @@ public class Main extends GUI {
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
 		Point point = new Point(e.getX(), e.getY());
-		Location loc = Location.newFromPoint(point, origin, scale);						//Translate MousePos into Location
+		Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
 		
-		Node node = getClosestNode(loc);												//Get Node closest to MousePos				
+		Node node = getClosestNode(mouseLoc);											//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
@@ -64,7 +66,7 @@ public class Main extends GUI {
 	protected void onSearch() {
 
 		String roadText = this.getSearchBox().getText();						//Get User Input
-		List<Road> selectRoads = new ArrayList<Road>();							//List to contain all Roads of equal Name & City
+		List<Road> selectRoads = new ArrayList<Road>();							//List to contain all Roads of equal Name
 		
 		for(Road r : roads.values()){
 			if(r.getLabel().equals(roadText))
@@ -119,24 +121,22 @@ public class Main extends GUI {
 	public Node getClosestNode(Location mouseLoc){
 		
 		Node node = null;
-		double dist = 1000;
+		double dist = 0;
 		
 		for(Node n: nodes.values()) 
 			n.setColor(Color.BLACK);								//Reset Intersection Color
 		
 		for(Node n: nodes.values()){
 			
-//			dist = n.getLocation().distance(mouseLoc);				//Calculate distance between actual Node and MouseLoc
-//			
-//			if(n.getLocation().isClose(mouseLoc, dist))				//If distance is close then this becomes the closest Node
-//				node = n;
+			dist = n.getLocation().distance(mouseLoc);				//Calculate distance between actual Node and MouseLoc
 			
-			if(n.getLocation().distance(mouseLoc) <= dist){
-				dist = n.getLocation().distance(mouseLoc);
+			System.out.println("NX: "+n.getLocation().x+"NY"+n.getLocation().y);
+			System.out.println("MX: "+mouseLoc.x+"MY"+mouseLoc.y);
+			if(n.getLocation().isClose(mouseLoc, dist))				//If distance is close then this becomes the closest Node
 				node = n;
-			}
+			
 		}	
-		
+
 		return node;
 	}
 	

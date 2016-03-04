@@ -67,10 +67,12 @@ public class Node {
 	public void drawNodes(Graphics g, Dimension d, Location origin, double scale, int offSetX, int offSetY){
 		
 		g.setColor(color);
+		
 		Point p = location.asPoint(origin, scale);
 		int x = (int) ((p.getX() + offSetX) + (d.width * 0.5));
 		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));			//Translate Co-Ordinates based on Panning x Zooming
 		
+		System.out.println(x + "," + y);
 		g.fillOval(x - 1, y - 1, 3 , 3);
 						
 	}
