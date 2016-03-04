@@ -4,7 +4,7 @@ public class TrieNode {
 
 	char c;
     HashMap<Character, TrieNode> children = new HashMap<Character, TrieNode>();
-    boolean isLeaf;
+    boolean isRoad;
  
     public TrieNode() {}
  

@@ -1,15 +1,35 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Trie {
 
 	private TrieNode root;
+	private Map<Integer, Road> roads;
 	 
-    public Trie() {
-        root = new TrieNode();
+    public Trie(Map<Integer, Road> roads) {
+        
+    	this.root = new TrieNode();
+    	this.roads = roads;
+        initTrie();
     }
  
-    // Inserts a word into the trie.
+    private void initTrie() {
+		
+    	List<String> roadNames = new ArrayList<String>();
+    	
+		for(Road r : roads.values()){
+			if(!roadNames.contains(r.getLabel()))
+				roadNames.add(r.getLabel());					//Build list of unique names
+		}
+		
+		for(String s : roadNames)
+			insert(s);											//Add each roadName to Trie
+		
+	}
+
+	// Inserts a word into the trie.
     public void insert(String word) {
         HashMap<Character, TrieNode> children = root.children;
  
@@ -28,7 +48,7 @@ public class Trie {
  
             //set leaf node
             if(i==word.length()-1)
-                t.isLeaf = true;    
+                t.isRoad = true;    
         }
     }
  
@@ -36,7 +56,7 @@ public class Trie {
     public boolean search(String word) {
         TrieNode t = searchNode(word);
  
-        if(t != null && t.isLeaf) 
+        if(t != null && t.isRoad) 
             return true;
         else
             return false;

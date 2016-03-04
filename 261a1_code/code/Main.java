@@ -19,6 +19,8 @@ public class Main extends GUI {
 	private Dimension dimension;
 	private Location origin;									//Panning x Zooming Variables
 	
+	private Trie trie;											//Trie Data Structure containing all Road Names
+	
 	public Main() {
 		
 		this.nodes = new HashMap<Integer, Node>();
@@ -30,6 +32,8 @@ public class Main extends GUI {
 		this.scale = 100;	
 		this.dimension = getDrawingAreaDimension();						//Initialize Scale & Shift Variables
 		this.origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
+		
+		this.trie = new Trie(roads);									//Initialize Trie Structure
 	}
 
 	@Override
@@ -48,10 +52,10 @@ public class Main extends GUI {
 
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
-		Point point = new Point(e.getX(), e.getY());
-		Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
+		Point point = new Point(e.getX(), Math.abs(e.getY()));
+		//Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
 		
-		Node node = getClosestNode(mouseLoc);											//Get Node closest to MousePos				
+		Node node = getClosestNode(point);											//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
@@ -118,23 +122,25 @@ public class Main extends GUI {
 	}
 	
 	/**Gets Node closest to MousePosition*/
-	public Node getClosestNode(Location mouseLoc){
+	public Node getClosestNode(Point mouseLoc){
 		
-		Node node = null;
-		double dist = 0;
+ 		Node node = null;
+		//double dist = 100;
+		double dist = 1000;
 		
 		for(Node n: nodes.values()) 
 			n.setColor(Color.BLACK);								//Reset Intersection Color
 		
 		for(Node n: nodes.values()){
-			
-			dist = n.getLocation().distance(mouseLoc);				//Calculate distance between actual Node and MouseLoc
-			
-			System.out.println("NX: "+n.getLocation().x+"NY"+n.getLocation().y);
-			System.out.println("MX: "+mouseLoc.x+"MY"+mouseLoc.y);
-			if(n.getLocation().isClose(mouseLoc, dist))				//If distance is close then this becomes the closest Node
+					
+//			if(n.getLocation().isClose(mouseLoc, dist))	{			//If distance is close then this becomes the closest Node
+//				dist = n.getLocation().distance(mouseLoc);
+//				node = n;
+//			}
+			if(Math.abs(n.getPixelPos().x - mouseLoc.x) + Math.abs(n.getPixelPos().y - mouseLoc.y) <= dist){
+				dist = Math.abs(n.getPixelPos().x - mouseLoc.x) + Math.abs(n.getPixelPos().y - mouseLoc.y);
 				node = n;
-			
+			}
 		}	
 
 		return node;

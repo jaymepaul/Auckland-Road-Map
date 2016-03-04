@@ -19,7 +19,7 @@ public class Node {
 	private List<RoadSegment> segments;											//List of Segments attached to Node
 	
 	private Color color;
-	private final int NODE_SIZE = 3;
+	private Point pos;
 	
 	
 	/**Node constructor, takes in a nodeID, latitude & longitude. 
@@ -72,7 +72,9 @@ public class Node {
 		int x = (int) ((p.getX() + offSetX) + (d.width * 0.5));
 		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));			//Translate Co-Ordinates based on Panning x Zooming
 		
-		System.out.println(x + "," + y);
+		//System.out.println("X: " + x + ",Y: " + y);
+		
+		pos = new Point(x - 1 , y - 1);
 		g.fillOval(x - 1, y - 1, 3 , 3);
 						
 	}
@@ -85,7 +87,10 @@ public class Node {
 		for(RoadSegment seg: segments){
 			
 			String roadName = main.getRoads().get(seg.getRoadSegID()).getLabel();			//Get RoadName from Segment
-			roadNames.add(roadName);
+			
+			if(!roadNames.contains(roadName))												//Only Add Unique Names
+				roadNames.add(roadName);
+			
 		}
 		
 		return roadNames;
@@ -113,6 +118,10 @@ public class Node {
 
 	public Color getColor() {
 		return color;
+	}
+	
+	public Point getPixelPos(){
+		return pos;
 	}
 
 
