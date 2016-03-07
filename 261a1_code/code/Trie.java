@@ -8,14 +8,12 @@ public class Trie {
 	private TrieNode root;
 	private List<String> roadNames;
 	
-	private Map<Integer, Road> roads;
 	private Map<String, Road> prefixRoads;
 	
 	private List<Road> selectRoads;
 	
     public Trie(Map<Integer, Road> roads) {
         
-    	this.roads = roads;
     	this.root = new TrieNode();
     	
     	this.roadNames = new ArrayList<String>();
@@ -75,7 +73,6 @@ public class Trie {
     // that starts with the given prefix.
     public boolean startsWith(String prefix) {
         
-    	
     	if(searchNode(prefix) == null) 
             return false;
         else
@@ -117,7 +114,7 @@ public class Trie {
 					
 				if(i <= entry.getKey().length()-1){	
 					
-					String subStr = entry.getKey().substring(0, i+1);						//Get Substring of RoadName based off ith pos on prefix
+					String subStr = entry.getKey().substring(0, i+1);				//Get Substring of RoadName based off ith pos on prefix
 			
 					if(prefix.equals(subStr)){										//If Prefix Matches, Add to list of Roads
 						selectRoads.add(entry.getValue());

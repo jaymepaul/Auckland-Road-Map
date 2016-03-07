@@ -10,8 +10,9 @@ import java.util.*;
 public class Main extends GUI {
 	
 	private Map<Integer, Node> nodes;
-	private Map<Integer, Road> roads;					
-	private List<RoadSegment> segments;							//Data Structures, All Maps, Easily Access Values via KEYS
+	private Map<Integer, Road> roads;
+	private List<Polygon> polygons;
+	private List<RoadSegment> segments;							//Data Structures, Maps & Lists, Easily Access Values via KEYS
 	
 	private double scale;
 	private int offSetX;
@@ -37,10 +38,13 @@ public class Main extends GUI {
 	protected void redraw(Graphics g) {		
 				
 		for(Node n: nodes.values())
-			n.drawNodes(g, origin, scale, offSetX, offSetY);				//Draw Nodes
+			n.drawNodes(g, origin, scale, offSetX, offSetY);			//Draw Nodes
 		
 		for(RoadSegment seg : segments)
 			seg.drawSegments(g, scale, origin, offSetX, offSetY);		//Draw Segments
+		
+		for(Polygon p: polygons)
+			p.drawPolygons(g, origin, scale, offSetX, offSetY);			//Draw Polygons
 		
 	}
 
@@ -107,8 +111,8 @@ public class Main extends GUI {
 		try {
 			Node.loadNodes(nodesFile, nodes);					
 			Road.loadRoads(roadsFile, roads);
-			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					//Load Files
-			//Polygon.loadPolygons(polygons);
+			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					
+			Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
 			
 			this.trie = new Trie(roads);									//Initialize Trie Structure
 		} catch (IOException e) {
