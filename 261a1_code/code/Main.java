@@ -16,7 +16,6 @@ public class Main extends GUI {
 	private double scale;
 	private int offSetX;
 	private int offSetY;
-	private Dimension dimension;
 	private Location origin;									//Panning x Zooming Variables
 	
 	private Trie trie;											//Trie Data Structure containing all Road Names
@@ -29,21 +28,19 @@ public class Main extends GUI {
 		
 		this.offSetX = 0;
 		this.offSetY = 0;
-		this.scale = 100;	
-		this.dimension = getDrawingAreaDimension();						//Initialize Scale & Shift Variables
-		this.origin = Location.newFromLatLon(-36.847622, 174.763444);	//AUX Centre
+		this.scale = 100;												
+		this.origin = Location.newFromLatLon(-36.847622, 174.763444);	//Initialize Scale & Shift Variables
 		
-		this.trie = new Trie(roads);									//Initialize Trie Structure
 	}
 
 	@Override
 	protected void redraw(Graphics g) {		
 				
 		for(Node n: nodes.values())
-			n.drawNodes(g, dimension, origin, scale, offSetX, offSetY);				//Draw Nodes
+			n.drawNodes(g, origin, scale, offSetX, offSetY);				//Draw Nodes
 		
 		for(RoadSegment seg : segments)
-			seg.drawSegments(g, dimension, scale, origin, offSetX, offSetY);		//Draw Segments
+			seg.drawSegments(g, scale, origin, offSetX, offSetY);		//Draw Segments
 		
 	}
 
@@ -53,9 +50,9 @@ public class Main extends GUI {
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
 		Point point = new Point(e.getX(), Math.abs(e.getY()));
-		//Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
+		Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
 		
-		Node node = getClosestNode(point);											//Get Node closest to MousePos				
+		Node node = getClosestNode(mouseLoc, point);											//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
@@ -68,17 +65,13 @@ public class Main extends GUI {
 
 	@Override
 	protected void onSearch() {
-
-		String roadText = this.getSearchBox().getText();						//Get User Input
-		List<Road> selectRoads = new ArrayList<Road>();							//List to contain all Roads of equal Name
 		
-		for(Road r : roads.values()){
-			if(r.getLabel().equals(roadText))
-				selectRoads.add(r);												//Add Road to List of Roads with equal Name
-		}
+		String prefix = getSearchBox().getText();								//Get User Input
 		
-		highlightRoad(selectRoads);												//Highlight Road on GUI
-		getTextOutputArea().setText(roadText);									//Display RoadName on TextBox
+		if(trie.startsWith(prefix))												//Search Trie using prefix
+			highlightRoads(trie.getRoads(prefix));								//If matches are found then get Roads and highlight them
+		
+		getTextOutputArea().setText(prefix);									//Display RoadName on TextBox
 		
 	}
 
@@ -116,16 +109,17 @@ public class Main extends GUI {
 			Road.loadRoads(roadsFile, roads);
 			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					//Load Files
 			//Polygon.loadPolygons(polygons);
+			
+			this.trie = new Trie(roads);									//Initialize Trie Structure
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**Gets Node closest to MousePosition*/
-	public Node getClosestNode(Point mouseLoc){
+	public Node getClosestNode(Location mouseLoc, Point pointLoc){
 		
  		Node node = null;
-		//double dist = 100;
 		double dist = 1000;
 		
 		for(Node n: nodes.values()) 
@@ -133,12 +127,12 @@ public class Main extends GUI {
 		
 		for(Node n: nodes.values()){
 					
-//			if(n.getLocation().isClose(mouseLoc, dist))	{			//If distance is close then this becomes the closest Node
+//			if(n.getLocation().isClose(mouseLoc, dist))	{			//BUGED?: If distance is close then this becomes the closest Node
 //				dist = n.getLocation().distance(mouseLoc);
 //				node = n;
 //			}
-			if(Math.abs(n.getPixelPos().x - mouseLoc.x) + Math.abs(n.getPixelPos().y - mouseLoc.y) <= dist){
-				dist = Math.abs(n.getPixelPos().x - mouseLoc.x) + Math.abs(n.getPixelPos().y - mouseLoc.y);
+			if(Math.abs(n.getPixelPos().x - pointLoc.x) + Math.abs(n.getPixelPos().y - pointLoc.y) <= dist){
+				dist = Math.abs(n.getPixelPos().x - pointLoc.x) + Math.abs(n.getPixelPos().y - pointLoc.y);
 				node = n;
 			}
 		}	
@@ -148,16 +142,19 @@ public class Main extends GUI {
 	
 	
 	/**Highlights Road based on Sequence of Segments within that Road*/
-	private void highlightRoad(List<Road> roads){
+	private void highlightRoads(List<Road> selectRoads){
 		
 		for(RoadSegment seg: segments)
 			seg.setColor(Color.BLUE); 						//Reset Color to all Segments
 		
-		for(Road r : roads){
-			for(RoadSegment seg : r.getSegments())
-				seg.setColor(Color.GREEN);					//Highlight selected Road
-		}		
-		
+		for(Road r : selectRoads){
+			
+			for(Road rd : r.getAllRoads(roads)){			//For each Road, get All Roads assoc. to it
+				
+				for(RoadSegment seg: rd.getSegments())		
+					seg.setColor(Color.GREEN);				//Highlight each Segment within the Road
+			}
+		}
 	}
 
 

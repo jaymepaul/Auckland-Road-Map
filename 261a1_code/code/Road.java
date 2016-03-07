@@ -10,7 +10,7 @@ public class Road {
 	private int roadID, type, oneWay, speed, roadClass, notForCar, notForPede, notForBicycle;
 	
 	private List<RoadSegment> segments;					//List of Road Segments
-	
+	private List<Road> roads;							//List of All Roads associated with this Road
 	
 	public Road(int roadID, int type, String label, String city, int oneWay, int speed, int roadClass, int notForCar, int notForPede, int notForBicycle) {
 		this.roadID = roadID;
@@ -25,6 +25,7 @@ public class Road {
 		this.notForBicycle = notForBicycle;
 		
 		this.segments = new ArrayList<RoadSegment>();
+		this.roads = new ArrayList<Road>();
 	}
 	
 	public static void loadRoads(File file, Map<Integer, Road> roads) throws IOException {
@@ -55,7 +56,17 @@ public class Road {
 		
 		br.close();
 	}
-
+	
+	/**Get all Roads associated with this Road*/
+	public List<Road> getAllRoads(Map<Integer, Road> mainRoads){
+		
+		for(Road r: mainRoads.values()){					//Go through all Roads, get ones that have equal Name
+			if(r.getLabel().equals(this.label))
+				roads.add(r);
+		}
+		
+		return roads;
+	}
 
 	public int getRoadID() {
 		return roadID;

@@ -1,7 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Ellipse2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +19,9 @@ public class Node {
 	
 	private Location location;
 	private List<RoadSegment> segments;											//List of Segments attached to Node
+	
+	private List<RoadSegment> outNeighbours;
+	private List<RoadSegment> inNeighbours;										//Nodes Neighbours
 	
 	private Color color;
 	private Point pos;
@@ -35,7 +40,10 @@ public class Node {
 		
 		this.color = Color.BLACK;
 		this.segments = new ArrayList<RoadSegment>();	
-		this.location = Location.newFromLatLon(latitude, longitude);			
+		this.location = Location.newFromLatLon(latitude, longitude);
+		
+		this.outNeighbours = new ArrayList<RoadSegment>();
+		this.inNeighbours = new ArrayList<RoadSegment>();				
 	}
 
 	
@@ -64,18 +72,18 @@ public class Node {
 	}
 	
 	/**Draws Nodes based on location, shift, scale and origin*/
-	public void drawNodes(Graphics g, Dimension d, Location origin, double scale, int offSetX, int offSetY){
+	public void drawNodes(Graphics g, Location origin, double scale, int offSetX, int offSetY){
 		
-		g.setColor(color);
 		
-		Point p = location.asPoint(origin, scale);
-		int x = (int) ((p.getX() + offSetX) + (d.width * 0.5));
-		int y = (int) ((p.getY() + offSetY) + (d.height * 0.5));			//Translate Co-Ordinates based on Panning x Zooming
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setColor(color);
 		
-		//System.out.println("X: " + x + ",Y: " + y);
+		Point p = location.asPoint(origin, scale);							//Translate location of Node into PixelCoord
+		Location pixelLoc = new Location(p.getX(), p.getY());
+		Location pixelPos = pixelLoc.moveBy(offSetX, offSetY);				//Translate location of PixelCoord based on Panning movement
 		
-		pos = new Point(x - 1 , y - 1);
-		g.fillOval(x - 1, y - 1, 3 , 3);
+		pos = new Point((int)pixelPos.x - 1, (int)pixelPos.y - 1);
+		g2.fill(new Ellipse2D.Double(pixelPos.x - 1, pixelPos.y - 1, 3, 3));
 						
 	}
 	
@@ -122,6 +130,16 @@ public class Node {
 	
 	public Point getPixelPos(){
 		return pos;
+	}
+
+
+	public List<RoadSegment> getOutNeighbours() {
+		return outNeighbours;
+	}
+
+
+	public List<RoadSegment> getInNeighbours() {
+		return inNeighbours;
 	}
 
 

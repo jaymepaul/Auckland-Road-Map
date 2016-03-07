@@ -1,7 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Line2D;
 import java.io.*;
 import java.util.*;
 
@@ -53,6 +55,9 @@ public class RoadSegment {
 			segment.getNode1().getSegments().add(segment);			//Add to Node's Collection of Segments
 			segment.getNode2().getSegments().add(segment);
 			
+			segment.getNode1().getOutNeighbours().add(segment);
+			segment.getNode2().getInNeighbours().add(segment);		//Update each Node's Neighbours
+			
 			roads.get(roadID).getSegments().add(segment);			//Add to Road's Collection of Segments
 			
 		}
@@ -61,24 +66,27 @@ public class RoadSegment {
 	}
 	
 	/**Draws Segments based on location, shift, scale and origin*/
-	public void drawSegments(Graphics g, Dimension d, double scale, Location origin, int offSetX, int offSetY){
+	public void drawSegments(Graphics g , double scale, Location origin, int offSetX, int offSetY){
+		
+		Graphics2D g2 = (Graphics2D) g;
 		
 		g.setColor(color);
 		
-		Point p1 = this.coords.get(0).asPoint(origin, scale);
+		Point p1 = coords.get(0).asPoint(origin, scale);						//Translate location of Node into PixelCoord
 		Point p2;
 		
 		for(int i = 1; i < coords.size(); i++){
 			
-			p2 = this.coords.get(i).asPoint(origin, scale);
+			p2 = coords.get(i).asPoint(origin, scale);							//Translate location of Node into PixelCoord
 			
-			int x1 = (int) ( (p1.getX() + offSetX) + (d.width * 0.5));
-			int y1 = (int) ( (p1.getY() + offSetY)  + (d.height * 0.5));
-			int x2 = (int) ( (p2.getX() + offSetX) + (d.width * 0.5));
-			int y2 = (int) ( (p2.getY() + offSetY) + (d.height * 0.5));				//Translate Co-Ordinates based on Panning x Zooming
+			Location pixelL1 = new Location(p1.getX(), p1.getY());
+			Location pixelP1 = pixelL1.moveBy(offSetX, offSetY);				
 			
-			g.drawLine(x1, y1, x2, y2);
-			p1 = p2;
+			Location pixelL2 = new Location(p2.getX(), p2.getY());
+			Location pixelP2 = pixelL2.moveBy(offSetX, offSetY);					//Translate location of PixelCoord based on Panning movement
+			
+			g2.draw(new Line2D.Double(pixelP1.x , pixelP1.y, pixelP2.x, pixelP2.y));
+			p1 = p2;																//Set N2 as N1 for next Segment
 			
 		}	
 	}
