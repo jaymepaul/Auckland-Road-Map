@@ -25,12 +25,13 @@ public class Main extends GUI {
 		
 		this.nodes = new HashMap<Integer, Node>();
 		this.roads = new HashMap<Integer, Road>();
+		this.polygons = new ArrayList<Polygon>();
 		this.segments = new ArrayList<RoadSegment>();			//Initialize Collections/DataStructures
 		
 		this.offSetX = 0;
 		this.offSetY = 0;
-		this.scale = 100;												
-		this.origin = Location.newFromLatLon(-36.847622, 174.763444);	//Initialize Scale & Shift Variables
+		this.scale = 100.0;												
+		this.origin = new Location(-4,0);						//Initialize Scale & Shift Variables
 		
 	}
 
@@ -43,8 +44,8 @@ public class Main extends GUI {
 		for(RoadSegment seg : segments)
 			seg.drawSegments(g, scale, origin, offSetX, offSetY);		//Draw Segments
 		
-		for(Polygon p: polygons)
-			p.drawPolygons(g, origin, scale, offSetX, offSetY);			//Draw Polygons
+//		for(Polygon p: polygons)
+//			p.drawPolygons(g, origin, scale, offSetX, offSetY);			//Draw Polygons
 		
 	}
 
@@ -56,7 +57,7 @@ public class Main extends GUI {
 		Point point = new Point(e.getX(), Math.abs(e.getY()));
 		Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
 		
-		Node node = getClosestNode(mouseLoc, point);											//Get Node closest to MousePos				
+		Node node = getClosestNode(mouseLoc, point);									//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
@@ -75,7 +76,8 @@ public class Main extends GUI {
 		if(trie.startsWith(prefix))												//Search Trie using prefix
 			highlightRoads(trie.getRoads(prefix));								//If matches are found then get Roads and highlight them
 		
-		getTextOutputArea().setText(prefix);									//Display RoadName on TextBox
+		String roadNames = trie.getRoadNames(prefix);							//Get all RoadNames
+		getTextOutputArea().setText(roadNames);									//Display RoadName on TextBox
 		
 	}
 

@@ -26,10 +26,11 @@ public class Trie {
     	
     	for(Road r : roads.values()){
     		if( ! roadNames.contains(r.getLabel()))
-    			roadNames.add(r.getLabel());				//Get List of Unique Road Names
+    			roadNames.add(r.getLabel() +","+r.getCity());		//Get List of Unique Road Names + City
     		
     		prefixRoads.put(r.getLabel(), r);				//Initialize Data Struct with RoadNames as indexes to Roads
     	}
+    	
     	
     	for(String s : roadNames)
     		insert(s);										//Insert all RoadNames into Trie
@@ -128,6 +129,16 @@ public class Trie {
 
 	public Map<String, Road> getPrefixRoads() {
 		return prefixRoads;
+	}
+
+	public String getRoadNames(String prefix) {
+
+		StringBuilder sb = new StringBuilder();
+		
+		for(Road r : getRoads(prefix))
+			sb.append("Street Name: " + r.getLabel() + "	City Name: " + r.getCity() + "\n");
+		
+		return sb.toString();
 	}
     
     

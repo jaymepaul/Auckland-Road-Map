@@ -17,19 +17,25 @@ import java.util.StringTokenizer;
 public class Polygon {
 
 	private String type;
+	private String label;
 	private int endLevel;
 	private int cityIdx;
 	private List<Location> data;
+	private List<List<Location>> multiData;
+	
 	private int[] xPos;
 	private int[] yPos;
 	
 	private Color color;
 	
-	public Polygon(String type, int endLevel, int cityIdx, List<Location> data){
+	public Polygon(String type, String label, int endLevel, int cityIdx, List<Location> data, List<List<Location>> multiData){
+		
 		this.type = type;
+		this.label = label;
 		this.endLevel = endLevel;
 		this.cityIdx = cityIdx;
-		this.data = new ArrayList<Location>();
+		this.data = data;
+		this.multiData = multiData;
 		
 		this.color = Color.BLACK;
 	}
@@ -37,31 +43,77 @@ public class Polygon {
 	public static void loadPolygons(File file, List<Polygon> polygons) throws IOException{
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
+		
 		String line;
+		String type = null, label = null;
+		int endLevel = 0, cityIdx = 0;
+		
+		String coords[];
+		List<Location> data = null;
+		List<List<Location>> multiData = new ArrayList<List<Location>>();
 		
 		try {
 			while((line = br.readLine()) != null){
 				
-				br.readLine();
-				
-				String type = br.readLine().substring(5);
-				int endLevel = Integer.parseInt(br.readLine().substring(9));
-				int cityIdx = Integer.parseInt(br.readLine().substring(8));
-				
-				List<Location> data = new ArrayList<Location>();
-				String coords[] = br.readLine().substring(7).split("),(");
-				
-				for(String s : coords){
-					String latLon[] = s.split(",");
-					data.add(Location.newFromLatLon(Double.parseDouble(latLon[0]), Double.parseDouble(latLon[1])));
+				if(line.equals("[POLYGON]"))
+					br.readLine();
+				else if(line.equals("[END]")){
+						
+					if(multiData.size() == 1){
+						polygons.add(new Polygon(type, label, endLevel, cityIdx, data, null));		//Create new Polygon & Add to Collection of Polygons
+						multiData.clear();						
+						break;
+					}
+					else
+						polygons.add(new Polygon(type, label, endLevel, cityIdx, null, multiData));
+						multiData.clear();
+					
+					br.readLine();
+					br.readLine();
 				}
 				
-				polygons.add(new Polygon(type, endLevel, cityIdx, data));		//Create new Polygon & Add to Collection of Polygons
+				String st[] = line.split("=");
 				
+				switch (st[0]){
 				
-				br.readLine();
-				br.readLine();
-			
+					case "Type":
+						type = st[1].toString();
+						break;
+					case "EndLevel":
+						endLevel = Integer.parseInt(st[1]);
+						break;
+					case "Label":
+						label = st[1].toString();
+						break;
+					case "CityIdx":
+						cityIdx = Integer.parseInt(st[1]);
+						break;
+					
+					case "Data0":
+						data = new ArrayList<Location>();
+						coords = st[1].split(",");	
+						
+						for(int i = 0; i < coords.length; i++){
+								double x = Double.parseDouble(coords[i].substring(1));
+								double y = Double.parseDouble(coords[i+1].substring(0, coords[i+1].length()-1));
+								data.add(Location.newFromLatLon(x, y));
+								i++;
+						}
+						multiData.add(data);
+						break;
+						
+					case "Data1":
+						data = new ArrayList<Location>();
+						coords = st[1].split(",");	
+						
+						for(int i = 0; i < coords.length; i++){
+								double x = Double.parseDouble(coords[i].substring(1));
+								double y = Double.parseDouble(coords[i+1].substring(0, coords[i+1].length()-1));
+								data.add(Location.newFromLatLon(x, y));
+								i++;
+						}
+						break;
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
