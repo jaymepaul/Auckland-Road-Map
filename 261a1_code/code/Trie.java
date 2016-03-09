@@ -22,6 +22,9 @@ public class Trie {
     	initTrie(roads);
     }
  
+    /**Initializes the Trie based on the RoadNames and CityNames in the Road Data Set
+     * 
+     * @param Map<Integer, Road> roads - A Map containing loaded data from the Road Data Set*/
     public void initTrie(Map<Integer, Road> roads){
     	
     	for(Road r : roads.values()){
@@ -31,47 +34,42 @@ public class Trie {
     		prefixRoads.put(r.getLabel(), r);				//Initialize Data Struct with RoadNames as indexes to Roads
     	}
     	
-    	
     	for(String s : roadNames)
     		insert(s);										//Insert all RoadNames into Trie
     	
     }
 
-	// Inserts a word into the Trie.
+	/**Inserts a Word (RoadName + CityName) into a Trie
+	 * 
+	 * @param String word*/
     public void insert(String word) {
-        HashMap<Character, TrieNode> children = root.children;
+      
+    	HashMap<Character, TrieNode> children = root.children;
  
-        for(int i=0; i<word.length(); i++){
-            char c = word.charAt(i);
+        for(int i = 0; i < word.length(); i++){
+            
+        	char c = word.charAt(i);
  
-            TrieNode t;
-            if(children.containsKey(c)){
-                    t = children.get(c);
-            }else{
-                t = new TrieNode(c);
-                children.put(c, t);
+            TrieNode trieNode;
+            
+            if(children.containsKey(c))
+            	trieNode = children.get(c);			//If it contains the current character on prefix, then set
+            else{
+                trieNode = new TrieNode(c);			//Else, create a new TrieNode and insert into Map
+                children.put(c, trieNode);
             }
  
-            children = t.children;
+            children = trieNode.children;			//Set Children Nodes
  
-            //set leaf node
-            if(i==word.length()-1)
-                t.isRoad = true;    
+            if(i == word.length()-1)
+                trieNode.isRoad = true;    
         }
     }
  
-    // Returns if the word is in the trie.
-    public boolean search(String word) {
-        TrieNode t = searchNode(word);
  
-        if(t != null && t.isRoad) 
-            return true;
-        else
-            return false;
-    }
- 
-    // Returns if there is any word in the trie
-    // that starts with the given prefix.
+    /**Returns true if there is an entry in the Trie that matches the given prefix
+     * 
+     * @param String prefix*/
     public boolean startsWith(String prefix) {
         
     	if(searchNode(prefix) == null) 
@@ -80,31 +78,36 @@ public class Trie {
             return true;
         
     }
- 
-    public TrieNode searchNode(String str){
-        Map<Character, TrieNode> children = root.children; 
-        TrieNode t = null;
-        for(int i=0; i<str.length(); i++){
-            char c = str.charAt(i);
+    
+    /**Searches the particular Node that matches the given prefix
+     * A match is found if the prefix matches an entry in the trie
+     * up to the ith position.
+     * 
+     * @param String prefix*/
+    public TrieNode searchNode(String prefix){
+        
+    	Map<Character, TrieNode> children = root.children; 
+        TrieNode trieNode = null;
+        
+        for(int i = 0; i < prefix.length(); i++){
+            
+        	char c = prefix.charAt(i);
+        	
             if(children.containsKey(c)){
-                t = children.get(c);
-                children = t.children;
-            }else{
-                return null;
+                trieNode = children.get(c);
+                children = trieNode.children;
             }
+            else
+                return null;
         }
  
-        return t;
+        return trieNode;
     }
 
-	public TrieNode getRoot() {
-		return root;
-	}
 
-	public void setRoot(TrieNode root) {
-		this.root = root;
-	}
-
+	/**Returns the list of Road objects that correspond to the given prefix
+	 * 
+	 * @param String prefix*/
 	public List<Road> getRoads(String prefix) {
 
 		selectRoads = new ArrayList<Road>();
@@ -127,10 +130,10 @@ public class Trie {
 		return selectRoads;
 	}
 
-	public Map<String, Road> getPrefixRoads() {
-		return prefixRoads;
-	}
-
+	/**Returns a String that consists of all the roadNames and cityNames
+	 * that match the given prefix
+	 * 
+	 * @param String prefix*/
 	public String getRoadNames(String prefix) {
 
 		StringBuilder sb = new StringBuilder();
@@ -140,7 +143,6 @@ public class Trie {
 		
 		return sb.toString();
 	}
-    
     
 	
 }

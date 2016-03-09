@@ -37,7 +37,7 @@ public class Polygon {
 		this.data = data;
 		this.multiData = multiData;
 		
-		this.color = Color.GREEN;
+		this.color = Color.BLUE;
 	}
 	
 	public static void loadPolygons(File file, List<Polygon> polygons) throws IOException{

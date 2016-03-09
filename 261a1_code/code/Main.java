@@ -21,6 +21,7 @@ public class Main extends GUI {
 	private Location origin;									//Panning x Zooming Variables
 	
 	private Trie trie;											//Trie Data Structure containing all Road Names
+	private QuadTree quadTree;									//QuadTree Data Structure to accurately pinpoint Node postition
 	
 	public Main() {
 		
@@ -31,7 +32,7 @@ public class Main extends GUI {
 		
 		this.offSetX = 0;
 		this.offSetY = 0;
-		this.scale = 40.0;												
+		this.scale = 10.0;												
 		this.origin = new Location(-3,0);						//Initialize Scale & Shift Variables
 		
 	}
@@ -51,13 +52,15 @@ public class Main extends GUI {
 	@Override
 	protected void onMouseMove(MouseEvent e) {
 
-		if(e.getX() >= 3 && e.getX() <= 20)
+		Dimension d = getDrawingAreaDimension();
+		
+		if(e.getX() >= 3 && e.getX() <= 30)
 			offSetX += 10;
-		if(e.getX() <= 451 && e.getX() >= 434)
+		if(e.getX() <= (d.getWidth()-5) && e.getX() >= (d.getWidth()-30))
 			offSetX -= 10;
-		if(e.getY() >= 3 && e.getY() <= 20)
+		if(e.getY() >= 3 && e.getY() <= 30)
 			offSetY += 10;
-		if(e.getY() <= 396 && e.getY() >= 378)
+		if(e.getY() <= (d.getHeight()-5) && e.getY() >= (d.getHeight()-30))
 			offSetY -= 10;								//Pan depending on Mouse boundaries
 	}
 	
@@ -145,6 +148,8 @@ public class Main extends GUI {
 				Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
 			
 			this.trie = new Trie(roads);									//Initialize Trie Structure
+			this.quadTree = new QuadTree(nodes);							//Initialize QuadTree
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
