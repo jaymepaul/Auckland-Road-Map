@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -30,11 +31,36 @@ public class Main extends GUI {
 		
 		this.offSetX = 0;
 		this.offSetY = 0;
-		this.scale = 15.0;												
-		this.origin = new Location(0,0);						//Initialize Scale & Shift Variables
+		this.scale = 40.0;												
+		this.origin = new Location(-3,0);						//Initialize Scale & Shift Variables
 		
 	}
 
+	@Override
+	protected void onScroll(MouseWheelEvent e) {
+
+		int zoomFactor = e.getWheelRotation();			//Neg - AWAY, Pos - TOWARDS
+		
+		if(zoomFactor > 0)
+			scale -= 10;
+		else if(zoomFactor < 0)
+			scale += 10;								//Zooming
+		
+	}
+	
+	@Override
+	protected void onMouseMove(MouseEvent e) {
+
+		if(e.getX() >= 3 && e.getX() <= 20)
+			offSetX += 10;
+		if(e.getX() <= 451 && e.getX() >= 434)
+			offSetX -= 10;
+		if(e.getY() >= 3 && e.getY() <= 20)
+			offSetY += 10;
+		if(e.getY() <= 396 && e.getY() >= 378)
+			offSetY -= 10;								//Pan depending on Mouse boundaries
+	}
+	
 	@Override
 	protected void redraw(Graphics g) {		
 				
@@ -114,7 +140,9 @@ public class Main extends GUI {
 			Node.loadNodes(nodesFile, nodes);					
 			Road.loadRoads(roadsFile, roads);
 			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					
-			Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
+			
+			if(polygonsFile != null)
+				Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
 			
 			this.trie = new Trie(roads);									//Initialize Trie Structure
 		} catch (IOException e) {
@@ -179,8 +207,5 @@ public class Main extends GUI {
 	public List<RoadSegment> getSegments() {
 		return segments;
 	}
-
-	
-	
 	
 }

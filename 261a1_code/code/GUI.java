@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -57,6 +58,18 @@ public abstract class GUI {
 	 * the actual drawing, which is done with the passed Graphics object.
 	 */
 	protected abstract void redraw(Graphics g);
+	
+	/**
+	 * Is called when the mouse is scrolled or clicked, 
+	 * which is done with the passed MouseWheelEvent object.
+	 */
+	protected abstract void onScroll(MouseWheelEvent e);
+	
+	/**
+	 * Is called when the mouse is moved, 
+	 * which is done with the passed MouseEvent object.
+	 */
+	protected abstract void onMouseMove(MouseEvent e);
 
 	/**
 	 * Is called when the mouse is clicked (actually, when the mouse is
@@ -381,9 +394,17 @@ public abstract class GUI {
 			}
 		});
 
-		drawing.addMouseWheelListener(new MouseAdapter() {
+		drawing.addMouseWheelListener(new MouseAdapter() {			
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				//	TO DO 
+				onScroll(e);
+				redraw();											//Scroll Zoom
+			}
+		});
+		
+		drawing.addMouseMotionListener(new MouseAdapter() {
+			public void mouseMoved(MouseEvent e) {
+				onMouseMove(e);
+				redraw();											//Mouse Panning
 			}
 		});
 

@@ -154,6 +154,7 @@ public class Polygon {
 			}
 			
 			g2.drawPolygon(xPos, yPos, data.size());
+		
 			return;
 		}
 		else{
@@ -172,8 +173,9 @@ public class Polygon {
 					xPos[i] = (int) pixelPos.x;
 					yPos[i] = (int) pixelPos.y; 	// Split Data into X and Y array of Coordinates
 				}
-				
+					
 				g2.drawPolygon(xPos, yPos, data.size());
+				
 			}		
 			return;
 		}
