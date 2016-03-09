@@ -30,8 +30,8 @@ public class Main extends GUI {
 		
 		this.offSetX = 0;
 		this.offSetY = 0;
-		this.scale = 100.0;												
-		this.origin = new Location(-4,0);						//Initialize Scale & Shift Variables
+		this.scale = 15.0;												
+		this.origin = new Location(0,0);						//Initialize Scale & Shift Variables
 		
 	}
 
@@ -44,8 +44,8 @@ public class Main extends GUI {
 		for(RoadSegment seg : segments)
 			seg.drawSegments(g, scale, origin, offSetX, offSetY);		//Draw Segments
 		
-//		for(Polygon p: polygons)
-//			p.drawPolygons(g, origin, scale, offSetX, offSetY);			//Draw Polygons
+		for(Polygon p: polygons)
+			p.drawPolygons(g, origin, scale, offSetX, offSetY);			//Draw Polygons
 		
 	}
 

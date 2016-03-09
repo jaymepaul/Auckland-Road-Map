@@ -37,7 +37,7 @@ public class Polygon {
 		this.data = data;
 		this.multiData = multiData;
 		
-		this.color = Color.BLACK;
+		this.color = Color.GREEN;
 	}
 	
 	public static void loadPolygons(File file, List<Polygon> polygons) throws IOException{
@@ -56,20 +56,30 @@ public class Polygon {
 			while((line = br.readLine()) != null){
 				
 				if(line.equals("[POLYGON]"))
-					br.readLine();
+					line = br.readLine();
 				else if(line.equals("[END]")){
 						
 					if(multiData.size() == 1){
 						polygons.add(new Polygon(type, label, endLevel, cityIdx, data, null));		//Create new Polygon & Add to Collection of Polygons
+						
+						type = null; label = null;		//RESET 
+						endLevel = 0; cityIdx = 0;
 						multiData.clear();						
-						break;
 					}
-					else
-						polygons.add(new Polygon(type, label, endLevel, cityIdx, null, multiData));
+					else if(multiData.size() > 1){					
+						polygons.add(new Polygon(type, label, endLevel, cityIdx, null, multiData));		//Case for handling multiple data sets
+						
+						type = null; label = null; 		//RESET
+						endLevel = 0; cityIdx = 0;
 						multiData.clear();
+					}
 					
-					br.readLine();
-					br.readLine();
+					line = br.readLine();
+					line = br.readLine();
+					line = br.readLine();
+					
+					if(line == null)				//EOF
+						break;
 				}
 				
 				String st[] = line.split("=");
@@ -112,6 +122,7 @@ public class Polygon {
 								data.add(Location.newFromLatLon(x, y));
 								i++;
 						}
+						multiData.add(data);
 						break;
 				}
 			}
@@ -127,16 +138,44 @@ public class Polygon {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setColor(color);
 		
-		for(int i = 0; i < data.size(); i++){
+		if(multiData == null){								//If Polygon only contains one data set of coordinates
 			
-			Point p = data.get(i).asPoint(origin, scale);
-			Location pixelLoc = new Location(p.getX(), p.getY());
-			Location pixelPos = pixelLoc.moveBy(offSetX, offSetY);
+			xPos = new int[data.size()];
+			yPos = new int[data.size()];
 			
-			this.xPos[i] = (int)pixelPos.x;
-			this.yPos[i] = (int)pixelPos.y;				//Split Data into X and Y array of Coordinates
+			for(int i = 0; i < data.size(); i++){
+				
+				Point p = data.get(i).asPoint(origin, scale);
+				Location pixelLoc = new Location(p.getX(), p.getY());
+				Location pixelPos = pixelLoc.moveBy(offSetX, offSetY);
+				
+				xPos[i] = (int)pixelPos.x;
+				yPos[i] = (int)pixelPos.y;				//Split Data into X and Y array of Coordinates
+			}
+			
+			g2.drawPolygon(xPos, yPos, data.size());
+			return;
 		}
-		
-		g2.fillPolygon(xPos, yPos, data.size());
+		else{
+			
+			for(List<Location> data : multiData){
+				
+				xPos = new int[data.size()];
+				yPos = new int[data.size()];
+				
+				for(int i = 0; i < data.size(); i++){
+					
+					Point p = data.get(i).asPoint(origin, scale);
+					Location pixelLoc = new Location(p.getX(), p.getY());
+					Location pixelPos = pixelLoc.moveBy(offSetX, offSetY);
+
+					xPos[i] = (int) pixelPos.x;
+					yPos[i] = (int) pixelPos.y; 	// Split Data into X and Y array of Coordinates
+				}
+				
+				g2.drawPolygon(xPos, yPos, data.size());
+			}		
+			return;
+		}
 	}
 }
