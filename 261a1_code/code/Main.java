@@ -148,7 +148,7 @@ public class Main extends GUI {
 				Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
 			
 			this.trie = new Trie(roads);									//Initialize Trie Structure
-			this.quadTree = new QuadTree(nodes);							//Initialize QuadTree
+			//this.quadTree = new QuadTree(nodes, this);				//Initialize QuadTree
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -163,6 +163,8 @@ public class Main extends GUI {
 		
 		for(Node n: nodes.values()) 
 			n.setColor(Color.BLACK);								//Reset Intersection Color
+		
+		//node = quadTree.getClosestNode(mouseLoc);		--QUAD TREE 
 		
 		for(Node n: nodes.values()){
 					

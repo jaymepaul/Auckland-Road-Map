@@ -37,9 +37,12 @@ public class Polygon {
 		this.data = data;
 		this.multiData = multiData;
 		
-		this.color = Color.BLUE;
+		//this.color = colorIdentifier(type);
+		this.color = color.BLUE;
 	}
 	
+	
+
 	public static void loadPolygons(File file, List<Polygon> polygons) throws IOException{
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -179,5 +182,168 @@ public class Polygon {
 			}		
 			return;
 		}
+	}
+	
+	private Color colorIdentifier(String type) {
+
+		Color color = null;
+		
+		switch(type){
+		case "0x01":
+			color = Color.DARK_GRAY;
+			break;
+		case "0x02":
+			color = Color.DARK_GRAY;
+			break;
+		case "0x03":
+			color = Color.DARK_GRAY;
+			break;
+		case "0x04":
+			color = Color.GRAY;
+			break;
+		case "0x05":
+			color = Color.GRAY;
+			break;
+		case "0x06":
+			color = Color.GRAY;
+			break;
+		case "0x07":
+			color = Color.BLUE;
+			break;
+		case "0x08":
+			color = Color.GRAY;
+			break;
+		case "0x09":
+			color = Color.BLUE;
+			break;
+		case "0x0a":
+			color = Color.BLUE;
+			break;
+		case "0x0b":
+			color = Color.MAGENTA;
+			break;
+		case "0x0c":
+			color = Color.GRAY;
+			break;
+		case "0x0d":
+			color = Color.GREEN;
+			break;
+		case "0x0e":
+			color = Color.BLUE;
+			break;
+		case "0x13":
+			color = Color.GRAY;
+			break;
+		case "0x14":
+			color = Color.GREEN;
+			break;
+		case "0x15":
+			color = Color.GREEN;
+			break;
+		case "0x16":
+			color = Color.GREEN;
+			break;
+		case "0x17":
+			color = Color.GREEN;
+			break;
+		case "0x18":
+			color = Color.GREEN;
+			break;
+		case "0x19":
+			color = Color.GRAY;
+			break;
+		case "0x1a":
+			color = Color.GRAY;
+			break;
+		case "0x1e":
+			color = Color.GREEN;
+			break;
+		case "0x1f":
+			color = Color.GREEN;
+			break;
+		case "0x20":
+			color = Color.GREEN;
+			break;
+		case "0x28":
+			color = Color.BLUE;
+			break;
+		case "0x29":
+			color = Color.BLUE;
+			break;
+		case "0x32":
+			color = Color.BLUE;
+			break;
+		case "0x3b":
+			color = Color.BLUE;
+			break;
+		case "0x3c":
+			color = Color.BLUE;
+			break;
+		case "0x3d":
+			color = Color.BLUE;
+			break;
+		case "0x3e":
+			color = Color.BLUE;
+			break;
+		case "0x3f":
+			color = Color.BLUE;
+			break;
+		case "0x40":
+			color = Color.BLUE;
+			break;
+		case "0x41":
+			color = Color.BLUE;
+			break;
+		case "0x42":
+			color = Color.BLUE;
+			break;
+		case "0x43":
+			color = Color.BLUE;
+			break;
+		case "0x44":
+			color = Color.BLUE;
+			break;
+		case "0x45":
+			color = Color.BLUE;
+			break;
+		case "0x46":
+			color = Color.BLUE;
+			break;
+		case "0x47":
+			color = Color.BLUE;
+			break;
+		case "0x48":
+			color = Color.BLUE;
+			break;
+		case "0x49":
+			color = Color.BLUE;
+			break;
+		case "0x4c":
+			color = Color.BLUE;
+			break;
+		case "0x4d":
+			color = Color.BLUE;
+			break;
+		case "0x4e": 
+			color = Color.GREEN;
+			break;
+		case "0x4f":
+			color = Color.GREEN;
+			break;
+		case "0x50":
+			color = Color.GREEN;
+			break;
+		case "0x51":
+			color = Color.GREEN;
+			break;
+		case "0x52":
+			color = Color.GREEN;
+			break;
+		case "0x53":
+			color = Color.GRAY;
+			break;
+		}
+		
+		return color;
 	}
 }
