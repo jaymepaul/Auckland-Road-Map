@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.RenderingHints.Key;
 import java.util.ArrayList;
@@ -9,59 +10,113 @@ import javax.swing.JComponent;
 
 public class QuadTree {
 
-	private QuadNode root;
+	private final int QN_NODE_CAPACITY = 4;
 	
-	private Map<Integer, Node> nodes;
+	private BoundingBox boundary;
 	
+	private List<Node> allNodes;
+	private List<Node> points;
 	
-	public QuadTree(Map<Integer, Node> nodes, Main main){
-				
-		this.nodes = nodes;
-
-		initQuadTree(main);
+	private QuadTree NW;
+	private QuadTree NE;
+	private QuadTree SW;
+	private QuadTree SE;
+	
+	public QuadTree(BoundingBox boundary){
+		this.points = new ArrayList<Node>();
+		this.boundary = boundary;
 	}
 	
-	public void initQuadTree(Main main){
+	public QuadTree(BoundingBox boundary, List<Node> allNodes){
 		
+		this.boundary = boundary;
+		this.allNodes = allNodes;
+		this.points = new ArrayList<Node>();
 		
+		for(Node n : allNodes)
+			insert(n);
+
+	}
+
+
+	public void insert(Node n){
 		
-		
-		for(Node n : nodes.values()){
-			
-			
+		if(!boundary.containsNode(n))			//If Node is outside the boundaries of this quadrant, discard
+			return;
+		else if(points.size() < QN_NODE_CAPACITY){	//If there is space within this quad, add to this quads points
+			points.add(n);
+			return;
 		}
+		else if(NW == null)
+			subdivide();						//Otherwise subdivide and expand tree
+			
+		//Check which quadrant will accept the point - CURRENTLY INSERTING INTO THE RIGHT QUADS
+		if (NW.getBoundary().containsNode(n))
+			NW.insert(n);
+		if (NE.getBoundary().containsNode(n))
+			NE.insert(n);
+		if (SW.getBoundary().containsNode(n))
+			SW.insert(n);
+		if (SE.getBoundary().containsNode(n))
+			SE.insert(n);
 	}
-//	define a QuadTree class;
-//	define a Node class;
-//	implement a detail measuring function;
-//	implement a construction algorithm;
-//	implement an access algorithm.
-
-	public Node getClosestNode(Location mouseLoc, Point mousePoint) {
-
-		Node node = null;
-		float threshold = 1;
+	
+	public void subdivide(){
 		
-		//0. Get list of Nodes that reside within a 10px radius of the mouseClick
-		List<Node> selectNodes = new ArrayList<Node>();
-		for(Node n : nodes.values()){
-			if(mouseLoc.distance(n.getLocation()) <= 1.0)			//CHECK - PROPER RADIUS COORDS,
-				selectNodes.add(n);
+		//Subdivide - Initialize Quadrants
+		NW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
+		NE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
+		SW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
+		SE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY()/2 - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
+		
+	}
+	
+	public List<Node> queryRange(BoundingBox rangeBoundary){
+		
+		List<Node> pointsInRange = new ArrayList<Node>();
+		
+		//Check if this quads boundary intersects this range
+		if(!boundary.intersectsRange(rangeBoundary))
+			return pointsInRange;			//Empty
+		
+		//Check objects at this quad level
+		for(int i = 0; i < points.size(); i++){
+			if(rangeBoundary.containsNode(points.get(i)))
+				pointsInRange.add(points.get(i));
 		}
 		
-		//1. Get mouseLoc coordinates, create QN, establish rect boundaries
-		root = new QuadNode((int)mousePoint.getX(), (int)mousePoint.getY(), selectNodes);
+		//Terminate here, if there are no children
+		if(NW == null)
+			return pointsInRange;
 		
-		//2. Check if QN has only one Node in each quadrant
-		if(measureDetail(root) < threshold)				//If it Returns true then can get closest node, else split
-			node = root.getNode();
-		else
-			getClosestNode(mouseLoc);
-			//recrusive
+		//Else, Add Points from Children
+		for(Node n : NW.queryRange(rangeBoundary))
+			pointsInRange.add(n);
+		for(Node n : NE.queryRange(rangeBoundary))
+			pointsInRange.add(n);
+		for(Node n : SW.queryRange(rangeBoundary))
+			pointsInRange.add(n);
+		for(Node n : SE.queryRange(rangeBoundary))
+			pointsInRange.add(n);
 		
-		
-		
-		return node;
+		return pointsInRange;
 	}
+	
+	public void setBoundary(BoundingBox boundary) {
+		this.boundary = boundary;
+	}
+
+
+	public BoundingBox getBoundary() {
+		return boundary;
+	}
+
+
+	public List<Node> getPoints() {
+		return points;
+	}
+	
+	
+	
 	
 }

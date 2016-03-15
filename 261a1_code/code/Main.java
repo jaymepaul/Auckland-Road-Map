@@ -80,17 +80,25 @@ public class Main extends GUI {
 
 	@Override
 	protected void onClick(MouseEvent e) {
-
+		
+		Point p = getCentreLoc().asPoint(origin, scale);
+		quadTree = new QuadTree(new BoundingBox((int)p.getX(), (int)p.getY(), getMaxWidth(),getMaxHeight()), getNodesList()); //Initialize QuadTree
+		
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
 		Point point = new Point(e.getX(), Math.abs(e.getY()));
 		Location mouseLoc = Location.newFromPoint(point, origin, scale);				//Translate MousePos into a Location
 		
+		
+		BoundingBox rangeBoundary = new BoundingBox(point.x, point.y, point.x+100, point.y+100);
+		List<Node> selectNodes = quadTree.queryRange(rangeBoundary);	//Gets list of Nodes closest to click
+//		Node node = getClosestNode(point, selectNodes);
+		
 		Node node = getClosestNode(mouseLoc, point);									//Get Node closest to MousePos				
 		info.append("NodeID: " + Integer.toString(node.getNodeID()) + "\n");			//Get Intersection ID
 		
 		info.append("Roads at Intersection: \n");
-		for(String s : node.getRoadsAtIntersect(this))
+		for(String s : node.getRoadsAtIntersect(roads))
 			info.append("Road: " + s + "\n");											//Get RoadNames of Roads connected to Intersection
 		
 		node.setColor(Color.RED);														//Highlight Node on GUI
@@ -147,8 +155,8 @@ public class Main extends GUI {
 			if(polygonsFile != null)
 				Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
 			
-			this.trie = new Trie(roads);									//Initialize Trie Structure
-			//this.quadTree = new QuadTree(nodes, this);				//Initialize QuadTree
+			this.trie = new Trie(roads);										//Initialize Trie Structure
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -163,8 +171,6 @@ public class Main extends GUI {
 		
 		for(Node n: nodes.values()) 
 			n.setColor(Color.BLACK);								//Reset Intersection Color
-		
-		//node = quadTree.getClosestNode(mouseLoc);		--QUAD TREE 
 		
 		for(Node n: nodes.values()){
 					
@@ -203,6 +209,14 @@ public class Main extends GUI {
 		new Main();
 	}
 
+	public List<Node> getNodesList(){
+		List<Node> data = new ArrayList<Node>();
+		for(Node n: nodes.values())
+			data.add(n);
+		
+		return data;
+	}
+	
 	public Map<Integer, Node> getNodes() {
 		return nodes;
 	}
@@ -215,4 +229,72 @@ public class Main extends GUI {
 		return segments;
 	}
 	
+	
+	/**Calculates maximum height - quadTree dimensions
+	 * 
+	 * @return double maxHeight - in Location Units*/
+	public int getMaxHeight(){
+		
+		double min = 100;
+		double max = -100;
+		
+		for(Node n : nodes.values()){
+			if(n.getLocation().y > max)
+				max = n.getLocation().y;
+			if(n.getLocation().y < min)
+				min = n.getLocation().y;
+		}
+		
+		return Math.abs((int) ((int)max - min));
+	}
+	
+	/**Calculates maximum width - quadTree dimensions
+	 * 
+	 * @return double maxWidth - in Location Units*/
+	public int getMaxWidth(){
+		
+		double min = 100;
+		double max = -100;
+		
+		for(Node n : nodes.values()){
+			if(n.getLocation().x > max)
+				max = n.getLocation().x;
+			if(n.getLocation().x < min)
+				min = n.getLocation().x;
+		}
+		
+		return Math.abs((int) ((int)max - min));
+	}
+	
+	/**Returns the exact centre Location of the dataSet - QuadTree Dimensions*/
+	public Location getCentreLoc(){
+		
+		double minX = 100;
+		double maxX = -100;
+		
+		for(Node n : nodes.values()){
+			if(n.getLocation().x > maxX)
+				maxX = n.getLocation().x;
+			if(n.getLocation().x < minX)
+				minX = n.getLocation().x;
+		}
+		
+		double distX = Math.abs(maxX - minX);
+		double centreX = minX + distX/2;
+		
+		double minY = 100;
+		double maxY = -100;
+		
+		for(Node n : nodes.values()){
+			if(n.getLocation().y > maxY)
+				maxY = n.getLocation().y;
+			if(n.getLocation().y < minY)
+				minY = n.getLocation().y;
+		}
+		
+		double distY = Math.abs(maxY - minY);
+		double centreY = minY + distY/2;
+		
+		return new Location(centreX, centreY);
+	}
 }

@@ -104,9 +104,7 @@ public class Location {
 	 * diamond shape around this location.
 	 */
 	public boolean isClose(Location other, double dist) {
-//		double x = Math.abs(this.x - other.x) ;
-//		double y = Math.abs(this.y - other.y);
-//		System.out.println("CLOSE CALC: "+ x + "," + y);
+
 		return Math.abs(this.x - other.x) + Math.abs(this.y - other.y) <= dist;
 	}
 

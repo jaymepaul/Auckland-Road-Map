@@ -87,15 +87,15 @@ public class Node {
 	}
 	
 	/**Returns List of RoadNames of Roads connected to Intersection*/
-	public List<String> getRoadsAtIntersect(Main main){
+	public List<String> getRoadsAtIntersect(Map<Integer, Road> roads){
 		
 		List<String> roadNames = new ArrayList<String>();
 		
 		for(RoadSegment seg: segments){
 			
-			String roadName = main.getRoads().get(seg.getRoadSegID()).getLabel();			//Get RoadName from Segment
+			String roadName = roads.get(seg.getRoadSegID()).getLabel();			//Get RoadName from Segment
 			
-			if(!roadNames.contains(roadName))												//Only Add Unique Names
+			if(!roadNames.contains(roadName))									//Only Add Unique Names
 				roadNames.add(roadName);
 			
 		}
