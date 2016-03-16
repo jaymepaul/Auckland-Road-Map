@@ -10,65 +10,106 @@ import javax.swing.JComponent;
 
 public class QuadTree {
 
-	private final int QN_NODE_CAPACITY = 4;
+	private final int QN_NODE_CAPACITY = 4;		//Max capacity for each quadNode
+	private boolean isLeaf;						//Determine whether quadNode isLeaf (Contains points of data) OR an internal node (Has quadNode children but no data)
 	
-	private BoundingBox boundary;
+	private BoundingBox boundary;				//Boundary object assigned to each node, establishes a boundary around node to segregate data points appropriately
+	private List<Node> points;					//List of data points
 	
-	private List<Node> allNodes;
-	private List<Node> points;
-	
-	private QuadTree NW;
+	private QuadTree NW;						
 	private QuadTree NE;
 	private QuadTree SW;
-	private QuadTree SE;
+	private QuadTree SE;						//Children
 	
-	public QuadTree(BoundingBox boundary){
+	
+	/**Creates a new QuadTree node, establishes a BoundingBox
+	 * and determines whether it is a leaf or an internal node
+	 * 
+	 * @param BoundingBox boundary
+	 * @param boolean isLeaf*/
+	public QuadTree(BoundingBox boundary, boolean isLeaf){
 		this.points = new ArrayList<Node>();
 		this.boundary = boundary;
+		this.isLeaf = isLeaf;
 	}
 	
+	/**Creates a new QuadTree, establishes a BoundingBox and 
+	 * populates the tree with all the data points/intersections
+	 * 
+	 * @param BoundingBox boundary
+	 * @param List<Node> allNodes*/
 	public QuadTree(BoundingBox boundary, List<Node> allNodes){
 		
 		this.boundary = boundary;
-		this.allNodes = allNodes;
 		this.points = new ArrayList<Node>();
+		this.isLeaf = false;
 		
-		for(Node n : allNodes)
+		subdivide();		//Initialize Quads
+		
+		for(Node n : allNodes){
+			System.out.println(n.getNodeID() +"	"+ n.getLocation().x +"	"+ n.getLocation().y);
 			insert(n);
+		}
 
 	}
 
 
 	public void insert(Node n){
 		
-		if(!boundary.containsNode(n))			//If Node is outside the boundaries of this quadrant, discard
-			return;
-		else if(points.size() < QN_NODE_CAPACITY){	//If there is space within this quad, add to this quads points
+		
+		if(points.size() < QN_NODE_CAPACITY){		//If there is space within this quad, add to this quads points
 			points.add(n);
+			System.out.println("INSERTED");
 			return;
 		}
-		else if(NW == null)
-			subdivide();						//Otherwise subdivide and expand tree
+		else{
 			
-		//Check which quadrant will accept the point - CURRENTLY INSERTING INTO THE RIGHT QUADS
-		if (NW.getBoundary().containsNode(n))
-			NW.insert(n);
-		if (NE.getBoundary().containsNode(n))
-			NE.insert(n);
-		if (SW.getBoundary().containsNode(n))
-			SW.insert(n);
-		if (SE.getBoundary().containsNode(n))
-			SE.insert(n);
+			System.out.println("SUBDIVIDING.. ");
+			subdivide();							//Otherwise subdivide and expand tree
+			
+			//Check which quadrant will accept the point
+				if (NW.getBoundary().containsNode(n))
+					NW.insert(n);
+				if (NE.getBoundary().containsNode(n))
+					NE.insert(n);
+				if (SW.getBoundary().containsNode(n))
+					SW.insert(n);
+				if (SE.getBoundary().containsNode(n))
+					SE.insert(n);
+			
+			isLeaf = false;				//Has Children
+		}
+		
 	}
 	
 	public void subdivide(){
 		
 		//Subdivide - Initialize Quadrants
-		NW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
-		NE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
-		SW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
-		SE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY()/2 - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2));
+		NW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		NE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		SW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		SE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY()/2 - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
 		
+		
+		//Split list of current points into appropriate quadrants
+		for(Node n : points){
+			if (NW.getBoundary().containsNode(n)){
+				NW.getPoints().add(n);
+				NW.setLeaf(true);
+			}
+			if (NE.getBoundary().containsNode(n)){
+				NE.getPoints().add(n);
+				NE.setLeaf(true);
+			}
+			if (SW.getBoundary().containsNode(n)){
+				SW.getPoints().add(n);
+				SW.setLeaf(true);
+			}
+			if (SE.getBoundary().containsNode(n)){
+				SE.getPoints().add(n);
+				SE.setLeaf(true);
+			}
+		}
 	}
 	
 	public List<Node> queryRange(BoundingBox rangeBoundary){
@@ -114,6 +155,14 @@ public class QuadTree {
 
 	public List<Node> getPoints() {
 		return points;
+	}
+
+	public boolean isLeaf() {
+		return isLeaf;
+	}
+
+	public void setLeaf(boolean isLeaf) {
+		this.isLeaf = isLeaf;
 	}
 	
 	

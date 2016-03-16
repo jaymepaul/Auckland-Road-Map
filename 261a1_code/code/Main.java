@@ -82,7 +82,8 @@ public class Main extends GUI {
 	protected void onClick(MouseEvent e) {
 		
 		Point p = getCentreLoc().asPoint(origin, scale);
-		quadTree = new QuadTree(new BoundingBox((int)p.getX(), (int)p.getY(), getMaxWidth(),getMaxHeight()), getNodesList()); //Initialize QuadTree
+		quadTree = new QuadTree(new BoundingBox(getCentreLoc().x, getCentreLoc().y,
+				getMaxWidth()+0.1,getMaxHeight()+0.1), getNodesList()); 				//Initialize QuadTree
 		
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
@@ -230,70 +231,63 @@ public class Main extends GUI {
 	}
 	
 	
-	/**Calculates maximum height - quadTree dimensions
+	/**Calculates maximum height - QuadTree dimensions
 	 * 
 	 * @return double maxHeight - in Location Units*/
-	public int getMaxHeight(){
+	public double getMaxHeight(){
 		
-		double min = 100;
-		double max = -100;
+		List<Double> yLocs = new ArrayList<Double>();
 		
-		for(Node n : nodes.values()){
-			if(n.getLocation().y > max)
-				max = n.getLocation().y;
-			if(n.getLocation().y < min)
-				min = n.getLocation().y;
-		}
+		for(Node n : nodes.values())
+			yLocs.add(n.getLocation().y);
 		
-		return Math.abs((int) ((int)max - min));
+		double max = Collections.max(yLocs);
+		double min = Collections.min(yLocs);
+		
+		return Math.abs(max - min);
 	}
 	
-	/**Calculates maximum width - quadTree dimensions
+	/**Calculates maximum width - QuadTree dimensions
 	 * 
 	 * @return double maxWidth - in Location Units*/
-	public int getMaxWidth(){
+	public double getMaxWidth(){
 		
-		double min = 100;
-		double max = -100;
+		List<Double> xLocs = new ArrayList<Double>();
 		
-		for(Node n : nodes.values()){
-			if(n.getLocation().x > max)
-				max = n.getLocation().x;
-			if(n.getLocation().x < min)
-				min = n.getLocation().x;
-		}
+		for(Node n : nodes.values())
+			xLocs.add(n.getLocation().x);
 		
-		return Math.abs((int) ((int)max - min));
+		double max = Collections.max(xLocs);
+		double min = Collections.min(xLocs);
+		
+		return Math.abs(max - min);
 	}
 	
-	/**Returns the exact centre Location of the dataSet - QuadTree Dimensions*/
+	/**Returns the exact centre Location of the dataSet - QuadTree Dimensions
+	 * 
+	 * @return Location - Initial Centre Location*/
 	public Location getCentreLoc(){
 		
-		double minX = 100;
-		double maxX = -100;
+		List<Double> xLocs = new ArrayList<Double>();
 		
-		for(Node n : nodes.values()){
-			if(n.getLocation().x > maxX)
-				maxX = n.getLocation().x;
-			if(n.getLocation().x < minX)
-				minX = n.getLocation().x;
-		}
+		for(Node n : nodes.values())
+			xLocs.add(n.getLocation().x);
 		
-		double distX = Math.abs(maxX - minX);
-		double centreX = minX + distX/2;
+		double maxX = Collections.max(xLocs);
+		double minX = Collections.min(xLocs);
 		
-		double minY = 100;
-		double maxY = -100;
+		double centreX = minX + getMaxWidth()/2;
 		
-		for(Node n : nodes.values()){
-			if(n.getLocation().y > maxY)
-				maxY = n.getLocation().y;
-			if(n.getLocation().y < minY)
-				minY = n.getLocation().y;
-		}
 		
-		double distY = Math.abs(maxY - minY);
-		double centreY = minY + distY/2;
+		List<Double> yLocs = new ArrayList<Double>();
+		
+		for(Node n : nodes.values())
+			yLocs.add(n.getLocation().y);
+		
+		double maxY = Collections.max(yLocs);
+		double minY = Collections.min(yLocs);
+		
+		double centreY = minY + getMaxHeight()/2;
 		
 		return new Location(centreX, centreY);
 	}
