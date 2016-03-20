@@ -20,7 +20,7 @@ public class Node {
 	private List<RoadSegment> segments;											//List of Segments attached to Node
 	
 	private List<RoadSegment> outNeighbours;
-	private List<RoadSegment> inNeighbours;										//Nodes Neighbours
+	private List<RoadSegment> inNeighbours;										//Collections to store IN and OUT edges from Node
 	
 	private Color color;
 	private Point pos;
@@ -46,7 +46,10 @@ public class Node {
 	}
 
 	
-	/**Read Nodes from data files 
+	/**Read all Node data from data files and parse them into Node objects,
+	 * add each Node to the Collection of Nodes 
+	 *
+	 * @param File file, Map<Integer, Node> nodes 
 	 * @throws IOException */
 	public static void loadNodes(File file, Map<Integer, Node> nodes) throws IOException{
 					
@@ -70,7 +73,9 @@ public class Node {
 		br.close();
 	}
 	
-	/**Draws Nodes based on location, shift, scale and origin*/
+	/**Draws Nodes based on location, shift, scale and origin
+	 * 
+	 * @param Graphics g, Location origin, double scale, int offSetX, int offSetY*/
 	public void drawNodes(Graphics g, Location origin, double scale, int offSetX, int offSetY){
 		
 		
@@ -86,7 +91,9 @@ public class Node {
 						
 	}
 	
-	/**Returns List of RoadNames of Roads connected to Intersection*/
+	/**Returns List of RoadNames of Roads connected to Intersection
+	 * 
+	 * @return List<String> - list of road names at the intersection*/
 	public List<String> getRoadsAtIntersect(Map<Integer, Road> roads){
 		
 		List<String> roadNames = new ArrayList<String>();

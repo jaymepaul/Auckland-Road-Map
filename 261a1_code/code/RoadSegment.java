@@ -11,12 +11,19 @@ public class RoadSegment {
 
 	private int roadID;
 	private double length;
+	
 	private Node node1;
-	private Node node2;
-	private List<Location> coords; 				// List of Co-ordinates along segment
+	private Node node2;							// Intersections at each end of the Segment
+	
+	private List<Location> coords; 				// List of coordinates along segment
 	
 	private Color color;
 
+	/**Road Segment constructor takes in the following parameters
+	 * Immediately finds its Intersections and sets them N1, N2
+	 * 
+	 * @param int roadID, double length, int nodeID1, int nodeID2, List<Location> coords, Map<Integer, Node> nodes
+	 * @return new RoadSegment obejct*/
 	public RoadSegment(int roadID, double length, int nodeID1, int nodeID2, List<Location> coords, Map<Integer, Node> nodes) {
 
 		this.roadID = roadID;
@@ -29,6 +36,11 @@ public class RoadSegment {
 		this.color = Color.BLUE;
 	}
 
+	/**Load RoadSegments from data files, 
+	 * creates new RoadSegment objects and 
+	 * adds them to the Collection of Segments
+	 * 
+	 * @param File file, List<RoadSegment segments, Map<Integer,Node> nodes, Map<Integer,Road> roads*/
 	public static void loadSegments(File file, List<RoadSegment> segments, Map<Integer, Node> nodes, Map<Integer, Road> roads) throws IOException {
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -64,7 +76,9 @@ public class RoadSegment {
 		br.close();
 	}
 	
-	/**Draws Segments based on location, shift, scale and origin*/
+	/**Draws Segments based on location, shift, scale and origin
+	 * 
+	 * @param Graphics g, double scale, Location origin, int offSetX, int offSetY*/
 	public void drawSegments(Graphics g , double scale, Location origin, int offSetX, int offSetY){
 		
 		Graphics2D g2 = (Graphics2D) g;

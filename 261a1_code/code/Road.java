@@ -12,6 +12,11 @@ public class Road {
 	private List<RoadSegment> segments;					//List of Road Segments
 	private List<Road> roads;							//List of All Roads associated with this Road
 	
+	/**Road object constructor, creates a new Road object
+	 * initializes its Collection of Segments and Roads
+	 * 
+	 * @param int roadID, int type, String label, String city, int oneWay, int speed, int roadClass, int notForPede, int notForBicycle
+	 * @return new Road object*/
 	public Road(int roadID, int type, String label, String city, int oneWay, int speed, int roadClass, int notForCar, int notForPede, int notForBicycle) {
 		this.roadID = roadID;
 		this.type = type;
@@ -28,6 +33,11 @@ public class Road {
 		this.roads = new ArrayList<Road>();
 	}
 	
+	/**Loads all the Road data from the data files, 
+	 * parses them and creates new Road objects, 
+	 * inserting each one to the Collection of Roads
+	 * 
+	 * @param File file, Map<Integer,Road> roads*/
 	public static void loadRoads(File file, Map<Integer, Road> roads) throws IOException {
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
@@ -57,7 +67,10 @@ public class Road {
 		br.close();
 	}
 	
-	/**Get all Roads associated with this Road*/
+	/**Get all Roads associated with this Road
+	 * 
+	 * @param Map<Integer Road> mainRoads
+	 * @return List<Road> - list of Roads*/
 	public List<Road> getAllRoads(Map<Integer, Road> mainRoads){
 		
 		for(Road r: mainRoads.values()){					//Go through all Roads, get ones that have equal Name

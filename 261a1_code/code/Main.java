@@ -13,7 +13,7 @@ public class Main extends GUI {
 	private Map<Integer, Node> nodes;
 	private Map<Integer, Road> roads;
 	private List<Polygon> polygons;
-	private List<RoadSegment> segments;							//Data Structures, Maps & Lists, Easily Access Values via KEYS
+	private List<RoadSegment> segments;							//Collections/Data Structures
 	
 	private double scale;
 	private int offSetX;
@@ -36,33 +36,6 @@ public class Main extends GUI {
 		this.origin = new Location(-3,0);						//Initialize Scale & Shift Variables
 		
 	}
-
-	@Override
-	protected void onScroll(MouseWheelEvent e) {
-
-		int zoomFactor = e.getWheelRotation();			//Neg - AWAY, Pos - TOWARDS
-		
-		if(zoomFactor > 0)
-			scale -= 10;
-		else if(zoomFactor < 0)
-			scale += 10;								//Zooming
-		
-	}
-	
-	@Override
-	protected void onMouseMove(MouseEvent e) {
-
-		Dimension d = getDrawingAreaDimension();
-		
-		if(e.getX() >= 3 && e.getX() <= 30)
-			offSetX += 10;
-		if(e.getX() <= (d.getWidth()-5) && e.getX() >= (d.getWidth()-30))
-			offSetX -= 10;
-		if(e.getY() >= 3 && e.getY() <= 30)
-			offSetY += 10;
-		if(e.getY() <= (d.getHeight()-5) && e.getY() >= (d.getHeight()-30))
-			offSetY -= 10;								//Pan depending on Mouse boundaries
-	}
 	
 	@Override
 	protected void redraw(Graphics g) {		
@@ -81,9 +54,9 @@ public class Main extends GUI {
 	@Override
 	protected void onClick(MouseEvent e) {
 		
-		Point p = getCentreLoc().asPoint(origin, scale);
-		quadTree = new QuadTree(new BoundingBox(getCentreLoc().x, getCentreLoc().y,
-				getMaxWidth()+0.1,getMaxHeight()+0.1), getNodesList()); 				//Initialize QuadTree
+//		Point p = getCentreLoc().asPoint(origin, scale);
+//		quadTree = new QuadTree(new BoundingBox(getCentreLoc().x, getCentreLoc().y,
+//				getMaxWidth()+0.1,getMaxHeight()+0.1), getNodesList()); 				//Initialize QuadTree
 		
 		StringBuilder info = new StringBuilder();										//String to store all info about intersection
 		
@@ -112,7 +85,7 @@ public class Main extends GUI {
 		String prefix = getSearchBox().getText();								//Get User Input
 		
 		if(trie.startsWith(prefix))												//Search Trie using prefix
-			highlightRoads(trie.getRoads(prefix));								//If matches are found then get Roads and highlight them
+			highlightRoads(trie.getRoads(prefix));								//If matches are found then get the entire Road and highlight it
 		
 		String roadNames = trie.getRoadNames(prefix);							//Get all RoadNames
 		getTextOutputArea().setText(roadNames);									//Display RoadName on TextBox
@@ -134,12 +107,12 @@ public class Main extends GUI {
 				break;
 			case EAST:
 				offSetX += 10;
-				break;
+				break;					//Adjust horizontal/vertical shift variables based on user input
 			case ZOOM_IN:
 				scale += 10;
 				break;
 			case ZOOM_OUT:
-				scale -= 10;
+				scale -= 10;			//Adjust zooming variables based on user input
 				break;
 		}	
 			
@@ -149,12 +122,12 @@ public class Main extends GUI {
 	protected void onLoad(File nodesFile, File roadsFile, File segmentsFile, File polygonsFile) {
 		
 		try {
-			Node.loadNodes(nodesFile, nodes);					
-			Road.loadRoads(roadsFile, roads);
-			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);					
+			Node.loadNodes(nodesFile, nodes);									//Load Nodes
+			Road.loadRoads(roadsFile, roads);									//Load Roads
+			RoadSegment.loadSegments(segmentsFile, segments, nodes, roads);		//Load Segments
 			
 			if(polygonsFile != null)
-				Polygon.loadPolygons(polygonsFile, polygons);					//Load All Files
+				Polygon.loadPolygons(polygonsFile, polygons);					//Load Polygons
 			
 			this.trie = new Trie(roads);										//Initialize Trie Structure
 			
@@ -164,7 +137,36 @@ public class Main extends GUI {
 		}
 	}
 	
-	/**Gets Node closest to MousePosition*/
+	@Override
+	protected void onScroll(MouseWheelEvent e) {
+
+		int zoomFactor = e.getWheelRotation();			//Neg - AWAY, Pos - TOWARDS
+		
+		if(zoomFactor > 0)
+			scale -= 10;
+		else if(zoomFactor < 0)
+			scale += 10;								//Zooming
+		
+	}
+	
+	@Override
+	protected void onMouseMove(MouseEvent e) {
+
+		Dimension d = getDrawingAreaDimension();
+		
+		if(e.getX() >= 3 && e.getX() <= 30)
+			offSetX += 10;
+		if(e.getX() <= (d.getWidth()-5) && e.getX() >= (d.getWidth()-30))
+			offSetX -= 10;
+		if(e.getY() >= 3 && e.getY() <= 30)
+			offSetY += 10;
+		if(e.getY() <= (d.getHeight()-5) && e.getY() >= (d.getHeight()-30))
+			offSetY -= 10;								//Pan depending on Mouse boundaries
+	}
+	
+	/**Gets Node closest to MousePosition
+	 * 
+	 * @param Location mouseLoc, Point pointLoc*/
 	public Node getClosestNode(Location mouseLoc, Point pointLoc){
 		
  		Node node = null;
@@ -209,14 +211,6 @@ public class Main extends GUI {
 	public static void main(String[] args) throws IOException {
 		new Main();
 	}
-
-	public List<Node> getNodesList(){
-		List<Node> data = new ArrayList<Node>();
-		for(Node n: nodes.values())
-			data.add(n);
-		
-		return data;
-	}
 	
 	public Map<Integer, Node> getNodes() {
 		return nodes;
@@ -230,6 +224,13 @@ public class Main extends GUI {
 		return segments;
 	}
 	
+	public List<Node> getNodesList(){
+		List<Node> data = new ArrayList<Node>();
+		for(Node n: nodes.values())
+			data.add(n);
+		
+		return data;
+	}
 	
 	/**Calculates maximum height - QuadTree dimensions
 	 * 
