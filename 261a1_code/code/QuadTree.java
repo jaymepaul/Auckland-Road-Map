@@ -44,7 +44,7 @@ public class QuadTree {
 		this.points = new ArrayList<Node>();
 		this.isLeaf = false;
 		
-		subdivide();		//Initialize Quads
+		subdivide();		//Initialize Quadrants
 		
 		for(Node n : allNodes){
 			System.out.println(n.getNodeID() +"	"+ n.getLocation().x +"	"+ n.getLocation().y);
@@ -57,28 +57,81 @@ public class QuadTree {
 	public void insert(Node n){
 		
 		
-		if(points.size() < QN_NODE_CAPACITY){		//If there is space within this quad, add to this quads points
-			points.add(n);
-			System.out.println("INSERTED");
-			return;
+		//If non-leaf object, then traverse down
+		if (NW.getBoundary().containsNode(n)){		//Decide which quadrant it should go into
+			if(NW.isLeaf){							//If Node is a leaf, get its points, move it down to child and mark node as non leaf
+				NW.subdivide(n);						
+				NW.setLeaf(false);
+			}
+			else									//Non Leaf Node, no data, recurse
+				NW.insert(n);
 		}
-		else{
-			
-			System.out.println("SUBDIVIDING.. ");
-			subdivide();							//Otherwise subdivide and expand tree
-			
-			//Check which quadrant will accept the point
-				if (NW.getBoundary().containsNode(n))
-					NW.insert(n);
-				if (NE.getBoundary().containsNode(n))
-					NE.insert(n);
-				if (SW.getBoundary().containsNode(n))
-					SW.insert(n);
-				if (SE.getBoundary().containsNode(n))
-					SE.insert(n);
-			
-			isLeaf = false;				//Has Children
+		if (NE.getBoundary().containsNode(n)){
+			if(NE.isLeaf){
+				NE.subdivide(n);
+				NE.setLeaf(false);
+			}
+			else 
+				NE.insert(n);
 		}
+		if (SW.getBoundary().containsNode(n)){
+			if(SW.isLeaf){
+				SW.subdivide(n);
+				SW.setLeaf(false);
+			}
+			else 
+				SW.insert(n);
+		}
+		if (SE.getBoundary().containsNode(n)){
+			if(SE.isLeaf){
+				SE.subdivide(n);
+				SE.setLeaf(false);
+			}
+			else 
+				SE.insert(n);
+		}
+		
+		
+	}
+	
+	public void subdivide(Node node){
+		
+		//Subdivide - Initialize Quadrants
+		NW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		NE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY() + boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		SW = new QuadTree(new BoundingBox(boundary.getX()/2, boundary.getY() - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		SE = new QuadTree(new BoundingBox(boundary.getX() + boundary.getX()/2, boundary.getY()/2 - boundary.getY()/2, boundary.getWidth()/2, boundary.getHeight()/2), false);
+		
+		
+		//Split list of current points into appropriate quadrants
+		for(Node n : points){
+			if (NW.getBoundary().containsNode(n)){
+				NW.getPoints().add(n);
+				NW.setLeaf(true);
+			}
+			if (NE.getBoundary().containsNode(n)){
+				NE.getPoints().add(n);
+				NE.setLeaf(true);
+			}
+			if (SW.getBoundary().containsNode(n)){
+				SW.getPoints().add(n);
+				SW.setLeaf(true);
+			}
+			if (SE.getBoundary().containsNode(n)){
+				SE.getPoints().add(n);
+				SE.setLeaf(true);
+			}
+		}
+		
+		//Add to list of points
+		if (NW.getBoundary().containsNode(node))
+			NW.getPoints().add(node);
+		if (NE.getBoundary().containsNode(node))
+			NE.getPoints().add(node);
+		if (SW.getBoundary().containsNode(node))
+			SW.getPoints().add(node);
+		if (SE.getBoundary().containsNode(node))
+			SE.getPoints().add(node);
 		
 	}
 	
@@ -110,6 +163,7 @@ public class QuadTree {
 				SE.setLeaf(true);
 			}
 		}
+
 	}
 	
 	public List<Node> queryRange(BoundingBox rangeBoundary){
@@ -163,6 +217,38 @@ public class QuadTree {
 
 	public void setLeaf(boolean isLeaf) {
 		this.isLeaf = isLeaf;
+	}
+
+	public QuadTree getNW() {
+		return NW;
+	}
+
+	public void setNW(QuadTree nW) {
+		NW = nW;
+	}
+
+	public QuadTree getNE() {
+		return NE;
+	}
+
+	public void setNE(QuadTree nE) {
+		NE = nE;
+	}
+
+	public QuadTree getSW() {
+		return SW;
+	}
+
+	public void setSW(QuadTree sW) {
+		SW = sW;
+	}
+
+	public QuadTree getSE() {
+		return SE;
+	}
+
+	public void setSE(QuadTree sE) {
+		SE = sE;
 	}
 	
 	
